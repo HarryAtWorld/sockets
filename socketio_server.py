@@ -5,9 +5,14 @@ import eventlet
 import socketio
 import time
 import asyncio
-#============== Panel - WebSocket Set Up ===========================
-panel_connection = {}
+import json
 
+panel_connection = {}
+camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
+mobile_device_list = {}
+panel_list = {}
+
+#============== Panel - WebSocket Set Up ===========================
 def api_to_central(input_api,panel_id):
     global panel_connection
     panel_connection[panel_id] = input_api
@@ -37,10 +42,6 @@ def send_to_panel(message):
 
 sio = socketio.Server(logger=False,engineio_logger=False,async_mode='eventlet')
 app = socketio.WSGIApp(sio)
-
-camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
-mobile_device_list = {}
-panel_list = {}
 
 
 #================ When Device Connection Started ================
@@ -154,7 +155,7 @@ def yellow_alarm(sid, data):
     print('camera_id:',camera_list[sid]['id'])
 
 
-    send_to_panel('{"LED":["B","G","G","G","G","G","G","G"]}')
+    send_to_panel(latest_LED())
 
     bibi_yellow_alarm_action()
 
@@ -171,7 +172,7 @@ def red_alarm(sid, data):
     print('=======================')
     print('camera_id:',camera_list[sid]['id'])
 
-    send_to_panel('{"LED":["R","G","G","G","G","G","G","G"]}')
+    send_to_panel(latest_LED())
     bibi_red_alarm_action()
     print_latest_list()
 #========= Functions==========
@@ -196,8 +197,6 @@ def print_latest_list():
             print(camera['type'],camera['id'],camera['state'])
         
 
-
-
 def get_updated_list():
     data={
         "camera":sorted(list(camera_list.values()),key=lambda dict: dict['id']),
@@ -205,6 +204,28 @@ def get_updated_list():
         "panel":sorted(list(panel_list.values()),key=lambda dict: dict['id']),
         }
     return  data
+
+def latest_LED():
+    led = ["G","G","G","G","G","G","G","G",]
+
+    camera_to_LED = {"7":2,
+                 "9":1,
+                 "11":0,
+                 "47":7,
+                 "45":6,
+                 "43":5,
+                 "41":4,
+                 "38":3}
+
+    for sid in camera_list:
+        led_index = camera_to_LED[f"{camera_list[sid]['id']}"]
+        if camera_list[sid]["state"] == "yellow_alarm":
+            led[led_index] = "B"
+        elif camera_list[sid]["state"] == "red_alarm":
+            led[led_index] = "R"
+    
+    output = {"LED":led}
+    return json.dumps(output)
     
 def bibi_yellow_alarm_action():
     #actions here
