@@ -4,9 +4,27 @@
 import eventlet
 import socketio
 import time
+import asyncio
+#============== Panel - WebSocket Set Up ===========================
+panel_connection = {}
 
+def api_to_central(input_api,panel_id):
+    global panel_connection
+    panel_connection[panel_id] = input_api
 
-server_port = 12000
+async def stp(message):
+    global panel_connection
+    for connection in panel_connection:
+        try:
+             await panel_connection[connection].send(message)
+        except BaseException as e:
+            print('sender error : ',e)
+            
+
+def send_to_panel(message):
+    asyncio.run(stp(message))
+#=============== SocketIO Setting ===================================
+
 
 sio = socketio.Server(logger=False,engineio_logger=False,async_mode='eventlet')
 app = socketio.WSGIApp(sio)
@@ -121,13 +139,15 @@ def yellow_alarm(sid, data):
     sio.emit('latest_data',get_updated_list())
     sio.emit('yellow_alarm',{'camera_id':camera_list[sid]['id']})
 
-    bibi_yellow_alarm_action()
-
-
     print('\n======================')
     print('===! Yellow Alarm !===')
     print('======================')
     print('camera_id:',camera_list[sid]['id'])
+
+
+    send_to_panel('{"LED":["B","G","G","G","G","G","G","G"]}')
+
+    bibi_yellow_alarm_action()
 
     print_latest_list()
 
@@ -137,13 +157,14 @@ def red_alarm(sid, data):
     sio.emit('latest_data',get_updated_list())
     sio.emit('red_alarm',{'camera_id':camera_list[sid]['id']})
 
-    bibi_red_alarm_action()
-
     print('\n=======================')
     print('===!!! Red Alarm !!!===')
     print('=======================')
     print('camera_id:',camera_list[sid]['id'])
 
+    send_to_panel('{"LED":["R","G","G","G","G","G","G","G"]}')
+    bibi_red_alarm_action()
+    print_latest_list()
 #========= Functions==========
 
 def print_latest_list():
@@ -186,12 +207,13 @@ def bibi_red_alarm_action():
 
 #=================== Start SocketIO Server ====================
 
-def socketio_start():
+def central_server_start(port):
     print('== Socket Server Start ==')
-    eventlet.wsgi.server(eventlet.listen(('', server_port)), app,log_output=False)
+    eventlet.wsgi.server(eventlet.listen(('', port)), app,log_output=False)
 
 if __name__ =='__main__':
-    socketio_start()
+    central_server_start(port)
+
 
 
 # while True:

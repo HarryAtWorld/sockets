@@ -4,17 +4,16 @@ import asyncio
 import websockets
 import time
 
-server = "ws://192.168.50.8:8888/panel_1"
-# server = "ws://192.168.50.5:81"
+# server = "ws://192.168.50.8:8888/panel_1"
+server = "ws://192.168.50.5:81"
 
 
 async def trigger():
     
-    await asyncio.sleep(2)
+    await asyncio.sleep(5)
     # time.sleep(2)
-    return json.dumps({"LED":["R","G","G","G","G","G","G","G"]})
-
-
+    return '{"LED":["R","G","G","G","G","G","G","G"]}'
+    
 
 async def receiver(websocket):
     try:

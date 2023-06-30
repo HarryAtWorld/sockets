@@ -32,18 +32,19 @@ import time
 import asyncio
 import websockets
 
-async def sender(websocket,message):
-    try:
-        await websocket.send(message)
-    except BaseException as e:
-        print("sender error : ",e)
+async def sender(websocket,message):        
+        try:
+            await websocket.send(message)
+        except BaseException as e:
+            print("sender error : ",e)
 
-async def receiver(websocket):
+async def receiver(websocket):    
+
     try:
         async for message in websocket:
             # await asyncio.sleep(2)
             print(message)
-            await sender(websocket,"res from server~~~~~~~~~")
+            await sender(websocket,"#######res from server~~~~~~~~~#########")
     except BaseException as e:
         print("receiver error : ",e)
 
@@ -54,13 +55,12 @@ async def check_closed(websocket):
 
 
 async def handler(websocket, path):
+    print("### ",path," connected ###")
+    await asyncio.gather(sender(websocket,"connected"),receiver(websocket),check_closed(websocket))
 
-    # await sender(websocket,"== connected ==")
-
-    await asyncio.gather(sender(websocket,"message"),receiver(websocket),check_closed(websocket))
-
-# websockets.serve(handler, '', 8888)
-# asyncio.run()
 
 asyncio.get_event_loop().run_until_complete(websockets.serve(handler, '', 8888))
 asyncio.get_event_loop().run_forever()
+
+# websockets.serve(handler, '', 8888)
+# asyncio.run()

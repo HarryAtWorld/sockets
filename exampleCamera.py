@@ -12,7 +12,7 @@ Socket1.start()
 
 #for example, sent alarm to server every 4 second.
 while True:
-    time.sleep(6)
+    time.sleep(5)
     print('trigger yellow alarm')
 
     socketio_camera.yellow_alarm()

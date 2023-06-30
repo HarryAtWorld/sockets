@@ -44,7 +44,7 @@ def yellow_alarm():
             break
         except:
             print('re-trying')
-            time.sleep(0.5)
+            time.sleep(2)
 
 def red_alarm():
     while True:        
