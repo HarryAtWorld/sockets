@@ -44,7 +44,7 @@ async def receiver(websocket):
         async for message in websocket:
             # await asyncio.sleep(2)
             print(message)
-            await sender(websocket,"#######res from server~~~~~~~~~#########")
+            await sender(websocket,"@@ res from server @@")
     except BaseException as e:
         print("receiver error : ",e)
 

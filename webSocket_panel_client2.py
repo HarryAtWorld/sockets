@@ -7,11 +7,10 @@ import time
 # server = "ws://192.168.50.8:8888/panel_1"
 # server = "ws://192.168.50.5:81"
 
-
-async def receiver(websocket):
+async def receiver(websocket,panel_id):
     try:
         async for message in websocket:
-            print(message)
+            print(f"panel {panel_id} got # {message} #")
 
     except BaseException as e:
         print('receiver error : ',e)
@@ -24,16 +23,14 @@ async def sender(websocket):
         print('sender error : ',e)
 
 
-async def check_closed(websocket):
+async def check_closed(websocket,panel_id):
     await websocket.wait_closed()
-    print("disconnected")
+    print(f"panel {panel_id} disconnected")
 
 async def connect(ip,api_to_central,panel_id):
     async for websocket in websockets.connect(ip):
-
-        api_to_central(websocket,panel_id)
-        
-        await asyncio.gather(sender(websocket),receiver(websocket),check_closed(websocket))
+        api_to_central(websocket,panel_id)        
+        await asyncio.gather(receiver(websocket,panel_id),check_closed(websocket,panel_id))
 
 def websocket_client_start(ip , api_to_cental_server,panel_id):
    asyncio.run(connect(ip , api_to_cental_server,panel_id))

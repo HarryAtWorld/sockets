@@ -12,17 +12,26 @@ def api_to_central(input_api,panel_id):
     global panel_connection
     panel_connection[panel_id] = input_api
 
+
+async def send(connection,message):
+    try:
+        await connection.send(message)
+    except BaseException as e:
+            print('sender error : ',e)
+
+
 async def stp(message):
     global panel_connection
-    for connection in panel_connection:
-        try:
-             await panel_connection[connection].send(message)
-        except BaseException as e:
-            print('sender error : ',e)
-            
+
+    connections = [send(panel_connection[connection],message) for connection in panel_connection]
+
+    await asyncio.gather(*connections)
+           
 
 def send_to_panel(message):
     asyncio.run(stp(message))
+
+
 #=============== SocketIO Setting ===================================
 
 
