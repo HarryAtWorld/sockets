@@ -56,7 +56,7 @@ async def check_closed(websocket):
 
 async def handler(websocket, path):
     print("### ",path," connected ###")
-    await asyncio.gather(sender(websocket,"connected"),receiver(websocket),check_closed(websocket))
+    await asyncio.gather(sender(websocket,"connected~!"),receiver(websocket),check_closed(websocket))
 
 
 asyncio.get_event_loop().run_until_complete(websockets.serve(handler, '', 8888))

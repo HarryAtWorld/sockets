@@ -1,20 +1,22 @@
 from datetime import datetime
 import time
+import asyncio
 
-def save_log(message):
+def main():
+    store = None
+    def hook(input):
+        nonlocal store
+        store = input
+    def get():
+        nonlocal store
+        return store
+    return hook,get
 
-    dt = datetime.now()
-    file_name = f"./log/{dt.year}-{dt.month}-{dt.day}.txt"
+h,g = main()
+h2,g2 = main()
 
+h("iiiiii")
 
-    try:
-        with open(file_name, "a") as log:
-            log.write(f"{dt}    {message}.\n")
-    except BaseException as err:
-        print(err)
+h2("hhhhh")
 
-save_log("1st")
-
-time.sleep(3)
-
-save_log("2nd")
+print(g(),g2())

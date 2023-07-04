@@ -36,7 +36,7 @@ def websocket_client_start(ip , api_hook, panel_id):
    asyncio.run(connect(ip , api_hook, panel_id))
 
 if __name__ == "__main__":
-    def hook_for_test(input):
+    def hook_for_test(input,id):
         return
 
-    websocket_client_start("ws://192.168.50.8:8888/panel_1",hook_for_test,"999")
+    websocket_client_start("ws://localhost:8888/panel_ttt",hook_for_test,"999")

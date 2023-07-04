@@ -255,7 +255,7 @@ def central_server_start(port):
     eventlet.wsgi.server(eventlet.listen(('', port)), app,log_output=False)
 
 if __name__ =='__main__':
-    central_server_start(port)
+    central_server_start(12000)
 
 
 
