@@ -1,15 +1,20 @@
-
-import asyncio
+from datetime import datetime
 import time
 
-async def ok():
-    while True:
-        await asyncio.sleep(3)
-        # time.sleep(1)
+def save_log(message):
 
-async def task():
+    dt = datetime.now()
+    file_name = f"./log/{dt.year}-{dt.month}-{dt.day}.txt"
 
-    await ok()
-    print("ok")
 
-asyncio.run(task())
+    try:
+        with open(file_name, "a") as log:
+            log.write(f"{dt}    {message}.\n")
+    except BaseException as err:
+        print(err)
+
+save_log("1st")
+
+time.sleep(3)
+
+save_log("2nd")

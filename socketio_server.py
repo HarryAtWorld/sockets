@@ -6,6 +6,8 @@ import socketio
 import time
 import asyncio
 import json
+from datetime import datetime
+
 
 panel_connection = {}
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
@@ -13,7 +15,7 @@ mobile_device_list = {}
 panel_list = {}
 
 #============== Panel - WebSocket Set Up ===========================
-def api_to_central(input_api,panel_id):
+def api_hook(input_api,panel_id):
     global panel_connection
     panel_connection[panel_id] = input_api
 
@@ -138,6 +140,8 @@ def cancel_alarm(sid, data):
             print('======================')
             print('camera_id:',data['camera_id'])
 
+            send_to_panel(latest_LED())
+
             print_latest_list()
             break
     
@@ -226,6 +230,15 @@ def latest_LED():
     
     output = {"LED":led}
     return json.dumps(output)
+
+def save_log(message):
+
+    dt = datetime.now()
+    file_name = f"{dt.year}-{dt.month}-{dt.day}.txt"
+
+    with open(file_name, "a") as log:
+        log.write(f"{dt}    {message}.")
+
     
 def bibi_yellow_alarm_action():
     #actions here

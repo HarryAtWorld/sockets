@@ -23,20 +23,20 @@ async def sender(websocket):
         print('sender error : ',e)
 
 
-async def check_closed(websocket,panel_id):
+async def check_closed(websocket, panel_id):
     await websocket.wait_closed()
     print(f"panel {panel_id} disconnected")
 
-async def connect(ip,api_to_central,panel_id):
+async def connect(ip,api_hook,panel_id):
     async for websocket in websockets.connect(ip):
-        api_to_central(websocket,panel_id)        
+        api_hook(websocket,panel_id)        
         await asyncio.gather(receiver(websocket,panel_id),check_closed(websocket,panel_id))
 
-def websocket_client_start(ip , api_to_cental_server,panel_id):
-   asyncio.run(connect(ip , api_to_cental_server,panel_id))
+def websocket_client_start(ip , api_hook, panel_id):
+   asyncio.run(connect(ip , api_hook, panel_id))
 
 if __name__ == "__main__":
-    def for_test(input):
+    def hook_for_test(input):
         return
 
-    websocket_client_start("ws://192.168.50.8:8888/panel_1",for_test)
+    websocket_client_start("ws://192.168.50.8:8888/panel_1",hook_for_test,"999")
