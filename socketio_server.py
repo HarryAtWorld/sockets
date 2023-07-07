@@ -7,12 +7,17 @@ import time
 import asyncio
 import json
 from datetime import datetime
+import os
 
 
-panel_connection = {}
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
-mobile_device_list = {}
-panel_list = {}
+mobile_device_list = {} #Data Example: same as camera list
+
+panel_connection = {}#Data Example: {"1":<websocket object>}
+panel_list = {} #Data Example: {"1":{state:'connected',type:'panel'}}
+
+if not os.path.exists("./log/"):
+    os.makedirs("./log/")    
 
 #============== Panel - WebSocket Set Up ===========================
 def api_hook(input_api,panel_id):
@@ -60,6 +65,7 @@ def register(sid, data):
     if data["device_type"] == 'camera': 
         camera_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         sio.emit('latest_data',get_updated_list())
+        save_log(f" camera {camera_list[sid]['id']}"," Connected")
 
         print('\n=======================')
         print("== Camera Registered ==")
@@ -71,6 +77,7 @@ def register(sid, data):
         
         mobile_device_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         sio.emit('latest_data',get_updated_list())
+        save_log(f" mobile device {mobile_device_list[sid]['id']}"," Connected")
 
         print('\n==============================')
         print("== Mobile Device Registered ==")
@@ -78,16 +85,16 @@ def register(sid, data):
         print("mobile device no.",data["device_id"],",",' internal socketID: ',sid)
         print_latest_list()
 
-    elif data['device_type'] == 'panel':
+    # elif data['device_type'] == 'panel':
         
-        panel_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-        sio.emit('latest_data',get_updated_list())
+    #     panel_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
+    #     sio.emit('latest_data',get_updated_list())
 
-        print('\n======================')
-        print("== Panel Registered ==")
-        print('======================')
-        print("panel no.",data["device_id"],",",' internal socketID: ',sid)
-        print_latest_list()
+    #     print('\n======================')
+    #     print("== Panel Registered ==")
+    #     print('======================')
+    #     print("panel no.",data["device_id"],",",' internal socketID: ',sid)
+    #     print_latest_list()
 
 @sio.event
 def request_latest_data(sid,data):
@@ -102,6 +109,7 @@ def disconnect(sid):
         print('================')
         print('camera no.',camera_list[sid]," disconnected")
 
+        save_log(f" camera {camera_list[sid]['id']}"," Disconnected")
         camera_list.pop(sid)
         sio.emit('latest_data',get_updated_list())
         print_latest_list()
@@ -111,18 +119,19 @@ def disconnect(sid):
         print('================')
         print('mobile device no.',mobile_device_list[sid]," disconnected")
 
+        save_log(f" mobile device {mobile_device_list[sid]['id']}"," Disconnected")
         mobile_device_list.pop(sid)
         sio.emit('latest_data',get_updated_list())
         print_latest_list()        
-    elif sid in panel_list:
-        print('\n================')
-        print('== Disconnect ==',)
-        print('================')
-        print('panel no.',panel_list[sid]," disconnected")
+    # elif sid in panel_list:
+    #     print('\n================')
+    #     print('== Disconnect ==',)
+    #     print('================')
+    #     print('panel no.',panel_list[sid]," disconnected")
 
-        panel_list.pop(sid)
-        sio.emit('latest_data',get_updated_list())
-        print_latest_list()
+    #     panel_list.pop(sid)
+    #     sio.emit('latest_data',get_updated_list())
+    #     print_latest_list()
 
     else:
         print("\n==Undefined Device Disconnected==")
@@ -132,7 +141,7 @@ def disconnect(sid):
 def cancel_alarm(sid, data):
     for i in camera_list:
         if camera_list[i]['id'] == data['camera_id']:
-            camera_list[i]['state'] = 'connected'
+            
             sio.emit('latest_data',get_updated_list())
 
             print('\n======================')
@@ -140,6 +149,8 @@ def cancel_alarm(sid, data):
             print('======================')
             print('camera_id:',data['camera_id'])
 
+            save_log(f"tablet {mobile_device_list[sid]['id']}",f" Canceled camera {camera_list[i]['id']} {camera_list[i]['state']} Alarm")
+            camera_list[i]['state'] = 'connected'
             send_to_panel(latest_LED())
 
             print_latest_list()
@@ -158,7 +169,7 @@ def yellow_alarm(sid, data):
     print('======================')
     print('camera_id:',camera_list[sid]['id'])
 
-
+    save_log(f" camera {camera_list[sid]['id']}"," Yellow Alarm")
     send_to_panel(latest_LED())
 
     bibi_yellow_alarm_action()
@@ -176,6 +187,7 @@ def red_alarm(sid, data):
     print('=======================')
     print('camera_id:',camera_list[sid]['id'])
 
+    save_log(f" camera {camera_list[sid]['id']}"," Red Alarm")
     send_to_panel(latest_LED())
     bibi_red_alarm_action()
     print_latest_list()
@@ -231,13 +243,22 @@ def latest_LED():
     output = {"LED":led}
     return json.dumps(output)
 
-def save_log(message):
+def save_log(id,message):
 
     dt = datetime.now()
-    file_name = f"{dt.year}-{dt.month}-{dt.day}.txt"
+    file_name = f"./log/{dt.year}-{dt.month}-{dt.day}.txt"
 
     with open(file_name, "a") as log:
-        log.write(f"{dt}    {message}.")
+        log.write(f"{dt},{id},{message}\n")
+
+def panel_register(panel_id):
+    panel_list[panel_id] = {"state":"connected","type":"panel"}
+    sio.emit('latest_data',get_updated_list())
+    print_latest_list()
+
+def panel_deregister(panel_id):
+    panel_list.pop(panel_id)
+    sio.emit('latest_data',get_updated_list())
 
     
 def bibi_yellow_alarm_action():
@@ -252,6 +273,7 @@ def bibi_red_alarm_action():
 
 def central_server_start(port):
     print('== Socket Server Start ==')
+    save_log(" central server"," Started")
     eventlet.wsgi.server(eventlet.listen(('', port)), app,log_output=False)
 
 if __name__ =='__main__':

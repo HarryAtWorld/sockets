@@ -1,0 +1,57 @@
+2023-07-07 15:28:41.642011, camera 7, Connected
+2023-07-07 15:28:46.641771, camera 7, Yellow Alarm
+2023-07-07 15:28:51.646960, camera 7, Yellow Alarm
+2023-07-07 15:28:56.652263, camera 7, Yellow Alarm
+2023-07-07 15:28:58.854558, camera 7, Disconnected
+2023-07-07 15:31:04.649401, central server, started
+2023-07-07 15:31:14.535351, camera 7, Connected
+2023-07-07 15:31:19.535303, camera 7, Yellow Alarm
+2023-07-07 15:31:20.213647, camera 7, Disconnected
+2023-07-07 15:31:53.168080, central server, started
+2023-07-07 15:31:55.359200, camera 7, Connected
+2023-07-07 15:32:00.357325, camera 7,  Yellow Alarm
+2023-07-07 15:32:05.362706, camera 7,  Yellow Alarm
+2023-07-07 15:32:10.367903, camera 7,  Yellow Alarm
+2023-07-07 15:32:12.620413, camera 7, Disconnected
+2023-07-07 15:32:21.280004, central server, started
+2023-07-07 15:32:23.977380, camera 7, Connected
+2023-07-07 15:32:25.396290, camera 7, Yellow Alarm
+2023-07-07 15:32:27.912785, camera 7, Disconnected
+2023-07-07 15:32:41.768300, central server, started
+2023-07-07 15:32:45.935550, camera 7, Connected
+2023-07-07 15:33:24.638645, central server, started
+2023-07-07 15:33:28.495086, camera 7, Connected
+2023-07-07 15:33:28.536759, camera 7, Yellow Alarm
+2023-07-07 15:33:33.543493, camera 7, Yellow Alarm
+2023-07-07 15:33:38.548749, camera 7, Yellow Alarm
+2023-07-07 15:33:43.554153, camera 7, Yellow Alarm
+2023-07-07 15:33:48.559164, camera 7, Yellow Alarm
+2023-07-07 15:33:49.852307, camera 7, Disconnected
+2023-07-07 15:33:58.692183, central server, started
+2023-07-07 15:34:02.451033, camera 7, Connected
+2023-07-07 15:34:03.588326, camera 7, Yellow Alarm
+2023-07-07 15:34:08.594089, camera 7, Yellow Alarm
+2023-07-07 15:34:13.595834, camera 7, Yellow Alarm
+2023-07-07 16:41:27.480855, central server, Started
+2023-07-07 16:42:15.211217, central server, Started
+2023-07-07 16:42:15.662400, panel 1, Connected
+2023-07-07 16:42:40.522858, central server, Started
+2023-07-07 16:42:40.658118, panel 1, Connected
+2023-07-07 16:46:34.477144, central server, Started
+2023-07-07 16:46:34.644840, panel 1, Connected
+2023-07-07 16:50:39.584933, central server, Started
+2023-07-07 16:51:08.469755, panel 1, Connected
+2023-07-07 16:52:57.975511, central server, Started
+2023-07-07 16:52:58.123403, panel 1, Connected
+2023-07-07 16:53:11.902246, central server, Started
+2023-07-07 16:53:12.049331, panel 1, Connected
+2023-07-07 16:53:32.217990, central server, Started
+2023-07-07 16:53:35.336952, panel 1, Connected
+2023-07-07 16:55:14.431976, central server, Started
+2023-07-07 16:55:14.517853, panel 1, Connected
+2023-07-07 16:55:38.457488, central server, Started
+2023-07-07 16:55:38.586080, panel 1, Connected
+2023-07-07 17:00:26.478192, central server, Started
+2023-07-07 17:00:26.635841, panel 1, Connected
+2023-07-07 17:03:17.789488, central server, Started
+2023-07-07 17:03:17.841989, panel 1, Connected

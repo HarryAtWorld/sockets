@@ -22,7 +22,7 @@ def connect_server(camera_id,server_ip):
             sio.connect(socket_sever)
             break
         except BaseException as error:
-            print(error,"\n\n ==Got Error on Connection Initialize==\nWill retry after 3s.")
+            print(f"\n\n ==Got Error on Connection Initialize==\n{error}\nWill retry after 3s.")
         time.sleep(3)
 
     sio.wait()
@@ -73,7 +73,7 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    connect_server(47,"ws://192.168.88.112:12000")
+    connect_server(47,"ws://192.168.88.24:12000")
 
 
 

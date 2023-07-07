@@ -1,22 +1,12 @@
-from datetime import datetime
-import time
-import asyncio
+dir = {}
 
-def main():
-    store = None
-    def hook(input):
-        nonlocal store
-        store = input
-    def get():
-        nonlocal store
-        return store
-    return hook,get
+dir['1'] = {"f":"rrrrr"}
+dir['6'] = {"f":"hhhhh"}
+dir['5'] = {"f":"hhhhh"}
+dir['2'] = {"f":"hhhhh"}
 
-h,g = main()
-h2,g2 = main()
+a = sorted(list(dir.items()))
 
-h("iiiiii")
+print(dir.items())
 
-h2("hhhhh")
 
-print(g(),g2())
