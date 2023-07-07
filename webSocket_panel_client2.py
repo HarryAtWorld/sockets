@@ -11,14 +11,15 @@ import time
 async def receiver(websocket,panel_id,log_callback,panel_register):
 
     try:
-        async for message in websocket:
-            if message == '{"Buzzer":"FALSE"]}':
-                log_callback(f" panel {panel_id}"," Buzzer stopped")
+        async for message in websocket:            
+            if message == '{"Buzzer":"FALSE"}\x00':
+                print("sss")
+                # log_callback(f" panel {panel_id}"," Buzzer stopped")
             elif message == "Connected":
                 print("eee")
                 print(panel_id)
-                panel_register(panel_id)
-            print({message})
+                # panel_register(panel_id)
+            print({message},"hhh")
 
     except BaseException as e:
         print('receiver error : ',e)
@@ -27,7 +28,7 @@ async def receiver(websocket,panel_id,log_callback,panel_register):
 async def sender(websocket):
 
     try:
-        await websocket.send('{"LED":["G","G","G","G","G","G","G","G"]}')
+        await websocket.send('{"LED":["R","G","G","G","G","G","G","G"]}')
     except BaseException as e:
         print('sender error : ',e)
 

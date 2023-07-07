@@ -55,3 +55,42 @@
 2023-07-07 17:00:26.635841, panel 1, Connected
 2023-07-07 17:03:17.789488, central server, Started
 2023-07-07 17:03:17.841989, panel 1, Connected
+2023-07-07 19:04:06.529079, central server, Started
+2023-07-07 19:04:44.154102, central server, Started
+2023-07-07 19:04:44.405849, panel 1, Connected
+2023-07-07 19:04:53.044205, camera 7, Connected
+2023-07-07 19:04:58.043439, camera 7, Yellow Alarm
+2023-07-07 19:05:03.048779, camera 7, Yellow Alarm
+2023-07-07 19:05:08.054144, camera 7, Yellow Alarm
+2023-07-07 19:05:13.057873, camera 7, Yellow Alarm
+2023-07-07 19:05:15.543875, camera 7, Disconnected
+2023-07-07 19:06:05.332059, central server, Started
+2023-07-07 19:06:05.508033, panel 1, Connected
+2023-07-07 19:06:10.598664, camera 7, Connected
+2023-07-07 19:06:15.597200, camera 7, Yellow Alarm
+2023-07-07 19:06:18.614419, camera 7, Disconnected
+2023-07-07 19:11:07.368683, central server, Started
+2023-07-07 19:11:07.468477, panel 1, Connected
+2023-07-07 19:11:10.965698, camera 7, Connected
+2023-07-07 19:11:15.965644, camera 7, Yellow Alarm
+2023-07-07 19:11:18.196901, camera 7, Disconnected
+2023-07-07 19:11:36.330066, central server, Started
+2023-07-07 19:11:36.449615, panel 1, Connected
+2023-07-07 19:11:41.965439, camera 7, Connected
+2023-07-07 19:11:46.965000, camera 7, Yellow Alarm
+2023-07-07 19:11:51.970175, camera 7, Yellow Alarm
+2023-07-07 19:11:53.625942, camera 7, Disconnected
+2023-07-07 19:12:19.653274, central server, Started
+2023-07-07 19:12:19.742715, panel 1, Connected
+2023-07-07 19:12:21.799098, camera 7, Connected
+2023-07-07 19:12:26.798316, camera 7, Yellow Alarm
+2023-07-07 19:12:31.798467, camera 7, Yellow Alarm
+2023-07-07 19:12:36.799873, camera 7, Yellow Alarm
+2023-07-07 19:12:39.848886, camera 7, Disconnected
+2023-07-07 19:13:56.373572, central server, Started
+2023-07-07 19:14:07.824543, central server, Started
+2023-07-07 19:14:08.117401, panel 1, Connected
+2023-07-07 19:14:23.283789, camera 7, Connected
+2023-07-07 19:14:28.284369, camera 7, Yellow Alarm
+2023-07-07 19:14:33.287236, camera 7, Yellow Alarm
+2023-07-07 19:14:35.958014, camera 7, Disconnected
