@@ -142,15 +142,15 @@ def cancel_alarm(sid, data):
     for i in camera_list:
         if camera_list[i]['id'] == data['camera_id']:
             
-            sio.emit('latest_data',get_updated_list())
 
             print('\n======================')
             print('=== Alarm Canceled ===')
             print('======================')
             print('camera_id:',data['camera_id'])
 
-            save_log(f"tablet {mobile_device_list[sid]['id']}",f" Canceled camera {camera_list[i]['id']} {camera_list[i]['state']} Alarm")
+            save_log(f" tablet {mobile_device_list[sid]['id']}",f" Canceled camera {camera_list[i]['id']} - {camera_list[i]['state']}")
             camera_list[i]['state'] = 'connected'
+            sio.emit('latest_data',get_updated_list())
             send_to_panel(latest_LED())
 
             print_latest_list()
@@ -252,12 +252,14 @@ def save_log(id,message):
         log.write(f"{dt},{id},{message}\n")
 
 def panel_register(panel_id):
-    panel_list[panel_id] = {"state":"connected","type":"panel"}
+    panel_list[panel_id] = {"id":panel_id,"state":"connected","type":"panel"}
+    print(panel_list)
     sio.emit('latest_data',get_updated_list())
     print_latest_list()
 
 def panel_deregister(panel_id):
     panel_list.pop(panel_id)
+    print(panel_list)
     sio.emit('latest_data',get_updated_list())
 
     

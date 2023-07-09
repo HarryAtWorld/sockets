@@ -14,7 +14,7 @@ async def receiver(websocket,panel_id,log_callback,panel_register):
         async for message in websocket:            
             if message == '{"Buzzer":"FALSE"}\x00':
                 print("sss")
-                # log_callback(f" panel {panel_id}"," Buzzer stopped")
+                log_callback(f" panel {panel_id}"," Buzzer stopped")
             elif message == "Connected":
                 print("eee")
                 print(panel_id)
@@ -43,6 +43,7 @@ async def connect(server_ip,panel_id,api_hook,log_callback,panel_register,panel_
     async for websocket in websockets.connect(server_ip):
         api_hook(websocket,panel_id)
         log_callback(f" panel {panel_id}"," Connected")
+        panel_register(panel_id)
         await asyncio.gather(receiver(websocket,panel_id,log_callback,panel_register),check_closed(websocket,panel_id,log_callback,panel_deregister))
 
 def websocket_client_start(server_ip ,panel_id, api_hook,log_callback,panel_register,panel_deregister):
