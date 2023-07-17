@@ -222,7 +222,7 @@ def get_updated_list():
     return  data
 
 def latest_LED():
-    led = ["G","G","G","G","G","G","G","G",]
+    led = ["E","E","E","E","E","E","E","E",]
 
     camera_to_LED = {"7":2,
                  "9":1,
@@ -235,7 +235,9 @@ def latest_LED():
 
     for sid in camera_list:
         led_index = camera_to_LED[f"{camera_list[sid]['id']}"]
-        if camera_list[sid]["state"] == "yellow_alarm":
+        if camera_list[sid]["state"] == "connected":
+            led[led_index]["G"]
+        elif camera_list[sid]["state"] == "yellow_alarm":
             led[led_index] = "B"
         elif camera_list[sid]["state"] == "red_alarm":
             led[led_index] = "R"
@@ -261,6 +263,21 @@ def panel_deregister(panel_id):
     panel_list.pop(panel_id)
     print(panel_list)
     sio.emit('latest_data',get_updated_list())
+
+def panel_cancel_all_alarm(panel_id):
+    for i in camera_list:
+        if not camera_list[i]["state"] == "disconnected":
+            camera_list[i]["state"] = "connected"
+    
+    print('\n======================')
+    print('=== All Alarm Canceled ===')
+    print('======================')   
+
+    save_log(f" panel {panel_id}",f" Canceled All Alarms")
+    sio.emit('latest_data',get_updated_list())
+    send_to_panel(latest_LED())
+
+    print_latest_list()
 
     
 def bibi_yellow_alarm_action():

@@ -8,29 +8,31 @@ import time
 # server = "ws://192.168.50.5:81"
 
 
-async def receiver(websocket,panel_id,log_callback,panel_register):
+async def receiver(websocket,panel_id,log_callback,panel_register,panel_cancel_all_alarm):
 
     try:
         async for message in websocket:            
             if message == '{"Buzzer":"FALSE"}\x00':
-                print("sss")
                 log_callback(f" panel {panel_id}"," Buzzer stopped")
-            elif message == "Connected":
-                print("eee")
-                print(panel_id)
-                # panel_register(panel_id)
-            print({message},"hhh")
+
+            elif message == "Connected":               
+                panel_register(panel_id)
+
+            elif message == '{"button_buzzer_2":"TRUE}':
+                panel_cancel_all_alarm(panel_id)
+
+
 
     except BaseException as e:
         print('receiver error : ',e)
 
 
-async def sender(websocket):
+# async def sender(websocket):
 
-    try:
-        await websocket.send('{"LED":["R","G","G","G","G","G","G","G"]}')
-    except BaseException as e:
-        print('sender error : ',e)
+#     try:
+#         await websocket.send('{"LED":["R","G","G","G","G","G","G","G"]}')
+#     except BaseException as e:
+#         print('sender error : ',e)
 
 
 async def check_closed(websocket, panel_id,log_callback,panel_deregister):
@@ -39,15 +41,15 @@ async def check_closed(websocket, panel_id,log_callback,panel_deregister):
     log_callback(f" panel {panel_id}"," Disconnected")
     print(f"panel {panel_id} disconnected")
 
-async def connect(server_ip,panel_id,api_hook,log_callback,panel_register,panel_deregister):
+async def connect(server_ip,panel_id,api_hook,log_callback,panel_register,panel_deregister,panel_cancel_all_alarm):
     async for websocket in websockets.connect(server_ip):
         api_hook(websocket,panel_id)
         log_callback(f" panel {panel_id}"," Connected")
-        panel_register(panel_id)
-        await asyncio.gather(receiver(websocket,panel_id,log_callback,panel_register),check_closed(websocket,panel_id,log_callback,panel_deregister))
+        # panel_register(panel_id)
+        await asyncio.gather(receiver(websocket,panel_id,log_callback,panel_register,panel_cancel_all_alarm),check_closed(websocket,panel_id,log_callback,panel_deregister))
 
-def websocket_client_start(server_ip ,panel_id, api_hook,log_callback,panel_register,panel_deregister):
-   asyncio.run(connect(server_ip ,panel_id, api_hook,log_callback,panel_register,panel_deregister))
+def websocket_client_start(server_ip ,panel_id, api_hook,log_callback,panel_register,panel_deregister,panel_cancel_all_alarm):
+   asyncio.run(connect(server_ip ,panel_id, api_hook,log_callback,panel_register,panel_deregister,panel_cancel_all_alarm))
 
 if __name__ == "__main__":
     def hook_for_test(input,id):
