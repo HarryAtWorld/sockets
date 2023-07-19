@@ -19,9 +19,9 @@ Socket9.start()
 
 while True:
     time.sleep(5)
-    print('trigger yellow alarm')
+    # print('trigger yellow alarm')
 
-    socketio_camera.yellow_alarm()
+    # socketio_camera.yellow_alarm()
     # socketio_camera.red_alarm()
 
 

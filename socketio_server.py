@@ -8,13 +8,13 @@ import asyncio
 import json
 from datetime import datetime
 import os
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 
-GPIO.setmode(GPIO.BCM)
-output_pin_bibi = 4
-GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
-GPIO.output(output_pin_bibi, GPIO.LOW)
+# GPIO.setmode(GPIO.BCM)
+# output_pin_bibi = 4
+# GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
+# GPIO.output(output_pin_bibi, GPIO.LOW)
 
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 mobile_device_list = {} #Data Example: same as camera list
@@ -90,17 +90,7 @@ def register(sid, data):
         print('==============================')
         print("mobile device no.",data["device_id"],",",' internal socketID: ',sid)
         print_latest_list()
-
-    # elif data['device_type'] == 'panel':
-        
-    #     panel_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-    #     sio.emit('latest_data',get_updated_list())
-
-    #     print('\n======================')
-    #     print("== Panel Registered ==")
-    #     print('======================')
-    #     print("panel no.",data["device_id"],",",' internal socketID: ',sid)
-    #     print_latest_list()
+  
 
 @sio.event
 def request_latest_data(sid,data):
@@ -242,7 +232,7 @@ def latest_LED():
     for sid in camera_list:
         led_index = camera_to_LED[f"{camera_list[sid]['id']}"]
         if camera_list[sid]["state"] == "connected":
-            led[led_index]["G"]
+            led[led_index] = "G"
         elif camera_list[sid]["state"] == "yellow_alarm":
             led[led_index] = "B"
         elif camera_list[sid]["state"] == "red_alarm":
@@ -279,9 +269,10 @@ def panel_cancel_all_alarm(panel_id):
     print('=== All Alarm Canceled ===')
     print('======================')   
 
+
     save_log(f" panel {panel_id}",f" Canceled All Alarms")
     sio.emit('latest_data',get_updated_list())
-    send_to_panel(latest_LED())
+    # send_to_panel(latest_LED()) <------------will do this in websocket client 2 directly
 
     print_latest_list()
 
@@ -291,12 +282,12 @@ def panel_cancel_all_alarm(panel_id):
 def bibi_yellow_alarm_action():
     #actions here
     print('bibi yellow triggered')
-    asyncio.run(tap_bibi_button())
+    # asyncio.run(tap_bibi_button())
 
 def bibi_red_alarm_action():
     #actions here
     print('bibi red triggered')
-    asyncio.run(tap_bibi_button())
+    # asyncio.run(tap_bibi_button())
 
 def push_down_bibi_button():
     GPIO.output(output_pin_bibi, GPIO.HIGH)
