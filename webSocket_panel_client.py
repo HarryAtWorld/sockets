@@ -5,39 +5,41 @@ import websockets
 import time
 
 # server = "ws://192.168.50.8:8888/panel_1"
-server = "ws://192.168.50.5:81"
+server = "ws://192.168.88.24:81/camera_1"
+
+connection = None
 
 
-async def trigger():
-    
-    await asyncio.sleep(5)
-    # time.sleep(2)
-    return '{"LED":["R","G","G","G","G","G","G","G"]}'
-    
 
 async def receiver(websocket):
-    try:
-        async for message in websocket:
+    async for message in websocket:
+        try:
             print(message)
     # except websockets.ConnectionClosed:
-    except BaseException as e:
-        print('receiver error : ',e)
-
-async def sender(websocket):
-    while True:
-        message = await trigger()
-        try:
-            await websocket.send(message)
         except BaseException as e:
-            print('sender error : ',e)
-            break
+            print('receiver error : ',e)
+
+async def sender(message):
+    global connection
+    await connection.send(message)
+
+def yellow_alarm():
+    asyncio.run(sender(json.dumps({'event':"yellow_alarm","data":id})))
+
+
+    
 async def check_closed(websocket):
     await websocket.wait_closed()
     print("disconnected")
 
 async def connect():
     async for websocket in websockets.connect(server):
-        await asyncio.gather(sender(websocket),receiver(websocket),check_closed(websocket))
+        try:
+            global connection
+            connection = websocket
+            await asyncio.gather(receiver(websocket),check_closed(websocket))
+        except websockets.ConnectionClosed:
+            continue
 
 def websocket_start():
     asyncio.run(connect())
