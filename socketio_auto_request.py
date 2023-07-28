@@ -3,13 +3,15 @@
 import socketio
 import time
 
-device_type = "camera"
-device_id = 999
+device_type = "auto_requesting_machine"
+device_id = 998
 socket_sever = ""
 sio = socketio.Client()
 
+connection = True
+
 #===================export functions=============================
-def connect_server(camera_id,server_ip):
+def start_auto_request(camera_id,server_ip):
 
     global device_id
     global socket_sever
@@ -57,23 +59,34 @@ def red_alarm():
 
 
 #=====================Socket IO Events===========================
-@sio.event
-def say_hi(data):
-    print('say hi received')
+
 
 @sio.event
 def connect():
+    global connection
     print('==Server Connected==')
-    sio.emit("register",{"device_type":device_type,"device_id":device_id})
+    connection = True
+    while connection:
+        try:
+            sio.emit("request_latest_data",{})
+            # print("== auto requesting latest data ==")
+            time.sleep(3)
+        except:
+            time.sleep(3)
+            print("#### ==== auto requesting --- some error ==== ####")
+            continue
     
 @sio.event
 def disconnect():
-    print('==Server Disconnected==')
+    global connection
+    connection = False
+    print('==Server Disconnected==',f"connection {connection}")
+
 
 
 
 if __name__ == '__main__':
-    connect_server(47,"ws://192.168.88.24:12000")
+    start_auto_request(998,"ws://192.168.1.60:12000")
 
 
 

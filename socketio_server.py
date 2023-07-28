@@ -8,13 +8,13 @@ import asyncio
 import json
 from datetime import datetime
 import os
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 
-# GPIO.setmode(GPIO.BCM)
-# output_pin_bibi = 4
-# GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
-# GPIO.output(output_pin_bibi, GPIO.LOW)
+GPIO.setmode(GPIO.BCM)
+output_pin_bibi = 4
+GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
+GPIO.output(output_pin_bibi, GPIO.LOW)
 
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 mobile_device_list = {} #Data Example: same as camera list
@@ -71,6 +71,7 @@ def register(sid, data):
     if data["device_type"] == 'camera': 
         camera_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         sio.emit('latest_data',get_updated_list())
+        send_to_panel(latest_LED())
         save_log(f" camera {camera_list[sid]['id']}"," Connected")
 
         print('\n=======================')
@@ -83,6 +84,7 @@ def register(sid, data):
         
         mobile_device_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         sio.emit('latest_data',get_updated_list())
+        
         save_log(f" mobile device {mobile_device_list[sid]['id']}"," Connected")
 
         print('\n==============================')
@@ -90,11 +92,28 @@ def register(sid, data):
         print('==============================')
         print("mobile device no.",data["device_id"],",",' internal socketID: ',sid)
         print_latest_list()
-  
+
+    # elif data['device_type'] == 'panel':
+        
+    #     panel_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
+    #     sio.emit('latest_data',get_updated_list())
+
+    #     print('\n======================')
+    #     print("== Panel Registered ==")
+    #     print('======================')
+    #     print("panel no.",data["device_id"],",",' internal socketID: ',sid)
+    #     print_latest_list()
+
+request_count = 1
 
 @sio.event
 def request_latest_data(sid,data):
-    sio.emit('latest_data',get_updated_list(),sid)
+    global request_count
+    sio.emit('latest_data',get_updated_list())
+    print(f"=============================== auto send out latest data - counter: {request_count}======================================")
+    request_count +=1
+    if request_count >1000:
+        request_count = 1
 
 #================ When Device Disconnected =====================
 @sio.event
@@ -108,6 +127,7 @@ def disconnect(sid):
         save_log(f" camera {camera_list[sid]['id']}"," Disconnected")
         camera_list.pop(sid)
         sio.emit('latest_data',get_updated_list())
+        send_to_panel(latest_LED())
         print_latest_list()
     elif sid in mobile_device_list:
         print('\n================')
@@ -118,6 +138,7 @@ def disconnect(sid):
         save_log(f" mobile device {mobile_device_list[sid]['id']}"," Disconnected")
         mobile_device_list.pop(sid)
         sio.emit('latest_data',get_updated_list())
+        
         print_latest_list()        
     # elif sid in panel_list:
     #     print('\n================')
@@ -252,13 +273,13 @@ def save_log(id,message):
 def panel_register(panel_id):
     panel_list[panel_id] = {"id":panel_id,"state":"connected","type":"panel"}
     print(panel_list)
-    sio.emit('latest_data',get_updated_list())
+    # sio.emit('latest_data',get_updated_list())  #<---Bug here, called from other thread will cause disconnection
     print_latest_list()
 
 def panel_deregister(panel_id):
     panel_list.pop(panel_id)
     print(panel_list)
-    sio.emit('latest_data',get_updated_list())
+    # sio.emit('latest_data',get_updated_list()) #<---Bug here, called from other thread will cause disconnection
 
 def panel_cancel_all_alarm(panel_id):
     for i in camera_list:
@@ -269,11 +290,10 @@ def panel_cancel_all_alarm(panel_id):
     print('=== All Alarm Canceled ===')
     print('======================')   
 
-
     save_log(f" panel {panel_id}",f" Canceled All Alarms")
-    sio.emit('latest_data',get_updated_list())
-    # send_to_panel(latest_LED()) <------------will do this in websocket client 2 directly
-
+    # sio.emit('latest_data',get_updated_list()) #<---Bug here, called from other thread will cause disconnection
+    # send_to_panel(latest_LED()) <------will do this in web socket client2 directly.
+    
     print_latest_list()
 
 
@@ -282,12 +302,12 @@ def panel_cancel_all_alarm(panel_id):
 def bibi_yellow_alarm_action():
     #actions here
     print('bibi yellow triggered')
-    # asyncio.run(tap_bibi_button())
+    asyncio.run(tap_bibi_button())
 
 def bibi_red_alarm_action():
     #actions here
     print('bibi red triggered')
-    # asyncio.run(tap_bibi_button())
+    asyncio.run(tap_bibi_button())
 
 def push_down_bibi_button():
     GPIO.output(output_pin_bibi, GPIO.HIGH)
