@@ -125,7 +125,10 @@ def disconnect(sid):
         print('camera no.',camera_list[sid]," disconnected")
 
         save_log(f" camera {camera_list[sid]['id']}"," Disconnected")
-        camera_list.pop(sid)
+        try:
+            camera_list.pop(sid)
+        except:
+            print('camera sid already deleted')
         sio.emit('latest_data',get_updated_list())
         send_to_panel(latest_LED())
         print_latest_list()
@@ -136,7 +139,10 @@ def disconnect(sid):
         print('mobile device no.',mobile_device_list[sid]," disconnected")
 
         save_log(f" mobile device {mobile_device_list[sid]['id']}"," Disconnected")
-        mobile_device_list.pop(sid)
+        try:
+            mobile_device_list.pop(sid)
+        except:
+            print("mobile devices sid already deleted")
         sio.emit('latest_data',get_updated_list())
         
         print_latest_list()        
@@ -277,7 +283,11 @@ def panel_register(panel_id):
     print_latest_list()
 
 def panel_deregister(panel_id):
-    panel_list.pop(panel_id)
+    try:
+        panel_list.pop(panel_id)
+    except:
+        print("panel already deleted")
+
     print(panel_list)
     # sio.emit('latest_data',get_updated_list()) #<---Bug here, called from other thread will cause disconnection
 
