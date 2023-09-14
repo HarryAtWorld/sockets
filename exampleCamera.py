@@ -24,9 +24,9 @@ while True:
     print('trigger yellow alarm: counter ', i)
 
     socketio_camera.yellow_alarm()
-    time.sleep(10)
+    time.sleep(5)
     socketio_camera.red_alarm()
-    time.sleep(10)
+    time.sleep(5)
 
 
 
