@@ -8,13 +8,13 @@ import asyncio
 import json
 from datetime import datetime
 import os
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 
-GPIO.setmode(GPIO.BCM)
-output_pin_bibi = 4
-GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
-GPIO.output(output_pin_bibi, GPIO.LOW)
+# GPIO.setmode(GPIO.BCM)
+# output_pin_bibi = 4
+# GPIO.setup(output_pin_bibi, GPIO.OUT, initial=GPIO.LOW)
+# GPIO.output(output_pin_bibi, GPIO.LOW)
 
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 mobile_device_list = {} #Data Example: same as camera list
@@ -65,6 +65,13 @@ def connect(sid, environ):
     print('========================')
     print('new device socket ID:',sid)
 
+#================ Testing =======================
+@sio.event
+def test_message(sid,message):
+    print('\n========================')
+    print("received: ",message)
+    print('========================')
+
 #================ Devices Register =======================
 @sio.event
 def register(sid, data):    
@@ -92,17 +99,6 @@ def register(sid, data):
         print('==============================')
         print("mobile device no.",data["device_id"],",",' internal socketID: ',sid)
         print_latest_list()
-
-    # elif data['device_type'] == 'panel':
-        
-    #     panel_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-    #     sio.emit('latest_data',get_updated_list())
-
-    #     print('\n======================')
-    #     print("== Panel Registered ==")
-    #     print('======================')
-    #     print("panel no.",data["device_id"],",",' internal socketID: ',sid)
-    #     print_latest_list()
 
 request_count = 1
 
@@ -146,15 +142,7 @@ def disconnect(sid):
         sio.emit('latest_data',get_updated_list())
         
         print_latest_list()        
-    # elif sid in panel_list:
-    #     print('\n================')
-    #     print('== Disconnect ==',)
-    #     print('================')
-    #     print('panel no.',panel_list[sid]," disconnected")
 
-    #     panel_list.pop(sid)
-    #     sio.emit('latest_data',get_updated_list())
-    #     print_latest_list()
 
     else:
         print("\n==Undefined Device Disconnected==")
@@ -195,7 +183,7 @@ def yellow_alarm(sid, data):
     save_log(f" camera {camera_list[sid]['id']}"," Yellow Alarm")
     send_to_panel(latest_LED())
 
-    bibi_yellow_alarm_action()
+    # bibi_yellow_alarm_action()
 
     print_latest_list()
 
@@ -212,7 +200,7 @@ def red_alarm(sid, data):
 
     save_log(f" camera {camera_list[sid]['id']}"," Red Alarm")
     send_to_panel(latest_LED())
-    bibi_red_alarm_action()
+    # bibi_red_alarm_action()
     print_latest_list()
 #========= Functions==========
 

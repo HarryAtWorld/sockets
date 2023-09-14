@@ -16,16 +16,25 @@ Socket9.start()
 
 #for example, sent alarm to server every 4 second.
 
-i=0
-while True:
-    i+=1
-    if(i>1000):
-        i = 1
-    print('trigger yellow alarm: counter ', i)
+i =0
 
-    socketio_camera.yellow_alarm()
-    time.sleep(10)
-    socketio_camera.red_alarm()
+# socketio_camera.yellow_alarm()
+# time.sleep(10)
+# socketio_camera.red_alarm()
+# time.sleep(15)
+
+# socketio_camera.yellow_alarm()
+# time.sleep(10)
+# socketio_camera.red_alarm()
+while True:
+    # i+=1
+    # if(i>1000):
+    #     i = 1
+    # print('trigger yellow alarm: counter ', i)
+
+    # socketio_camera.yellow_alarm()
+    # time.sleep(10)
+    # socketio_camera.red_alarm()
     time.sleep(10)
 
 
