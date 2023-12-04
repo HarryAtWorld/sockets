@@ -1,4 +1,16 @@
-# sockets
-socket api sample
+Central socketIO Server for drowning detection mobile devices
 
-for self use.
+# Start server
+
+> pip install -r requirements.txt
+
+then run `socket_server.py`  
+suggest using venv to run the server.
+
+# Client side
+
+functions in `socketio_camaera.py`.  
+The use example, see `exampleCamera.py`, using `yellow_alarm()` and `red_alarm()` to info server.
+
+
+
