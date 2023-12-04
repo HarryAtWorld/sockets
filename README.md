@@ -12,5 +12,7 @@ suggest using venv to run the server.
 functions in `socketio_camaera.py`.  
 The use example, see `exampleCamera.py`, using `yellow_alarm()` and `red_alarm()` to info server.
 
+# GPIO
 
+GPIO functions in `gpio.py`, if needed, import to server for using.
 
