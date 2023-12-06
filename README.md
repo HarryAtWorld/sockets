@@ -14,5 +14,8 @@ The use example, see `exampleCamera.py`, using `yellow_alarm()` and `red_alarm()
 
 # GPIO
 
+install package , should run below script on nano:
+>$ sudo pip install Jetson.GPIO
+
 GPIO functions in `gpio.py`, if needed, import to server for using.
 
