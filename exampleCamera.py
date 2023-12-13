@@ -3,7 +3,7 @@ from threading import Thread
 import socketio_camera
 
 camera_id = 38  #change this id for each camera
-socket_server = "ws://0.0.0.0:12000" #change the server address
+socket_server = "ws://localhost:12000" #change the server address
 
 Socketio = Thread(target = socketio_camera.connect_server,args=[camera_id,socket_server])
 

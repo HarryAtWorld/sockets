@@ -6,6 +6,7 @@ import asyncio
 from datetime import datetime
 from aiohttp import web
 import os
+import json
 
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 ipad_list = {} #Data Example: same as camera list
@@ -30,7 +31,17 @@ def connect(sid, environ):
 
 #================ Devices Register =======================
 @sio.event
-async def register(sid, data):    
+async def register(sid, data):
+
+    if type(data) == str:
+        data = json.loads(data)
+
+        smart_watch_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
+        
+        save_log(f" smart watch no. {smart_watch_list[sid]['id']}"," Connected")
+        print_heading(f'Smart watch no. {data["device_id"]} Registered')
+
+
     if data["device_type"] == 'camera': 
         camera_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         
@@ -40,14 +51,8 @@ async def register(sid, data):
     elif data['device_type'] == 'ipad':        
         ipad_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
                 
-        save_log(f" ipad {ipad_list[sid]['id']}"," Connected")
+        save_log(f" Ipad {ipad_list[sid]['id']}"," Connected")
         print_heading(f'Ipad no. {data["device_id"]} Registered')
-        
-    elif data['device_type'] == 'smartWatch':        
-        smart_watch_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-        
-        save_log(f" smart watch no. {smart_watch_list[sid]['id']}"," Connected")
-        print_heading(f'smart watch no. {data["device_id"]} Registered')
 
     await sio.emit('latest_data',get_updated_list())
     print_latest_list()
@@ -82,10 +87,10 @@ async def disconnect(sid):
         
         print_latest_list()
     elif sid in smart_watch_list:
-        print_heading(f"Smart watch no. {ipad_list[sid]['id']} Disconnected")
+        print_heading(f"Smart watch no. {smart_watch_list[sid]['id']} Disconnected")
         save_log(f" smart watch no. {smart_watch_list[sid]['id']}"," Disconnected")
         try:
-            ipad_list.pop(sid)
+            smart_watch_list.pop(sid)
         except:
             print("smart watch sid already deleted")
         await sio.emit('latest_data',get_updated_list())
@@ -104,7 +109,7 @@ async def cancel_alarm(sid, data):
             print_heading('Alarm Canceled')
             print('camera_id:',data['camera_id'])
 
-            save_log(f" Tablet {ipad_list[sid]['id']}",f" canceled camera {camera_list[i]['id']} - {camera_list[i]['state']}")
+            save_log(f" ipad {ipad_list[sid]['id']}",f" canceled camera {camera_list[i]['id']} - {camera_list[i]['state']}")
             camera_list[i]['state'] = 'connected'
             await sio.emit('latest_data',get_updated_list())
 

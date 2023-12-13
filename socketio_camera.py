@@ -10,9 +10,6 @@ sio = socketio.Client()
 #===================export functions=============================
 
 def connect_server(camera_id,server_ip):
-    try_connect(camera_id,server_ip)
-
-def try_connect(camera_id,server_ip):
 
     global device_id
     global socket_sever
