@@ -36,23 +36,33 @@ async def register(sid, data):
     if type(data) == str:
         data = json.loads(data)
 
-        smart_watch_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-        
-        save_log(f" smart watch no. {smart_watch_list[sid]['id']}"," Connected")
-        print_heading(f'Smart watch no. {data["device_id"]} Registered')
+        if data['device_type'] == 'smart_watch':
+            smart_watch_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
+            
+            save_log(f" smart watch no. {smart_watch_list[sid]['id']}"," Connected")
+            print_heading(f'Smart watch no. {data["device_id"]} Registered')
+
+        else:
+            print('<<< unknown device trying to register >>>')
+            
 
 
-    if data["device_type"] == 'camera': 
+    elif data["device_type"] == 'camera': 
         camera_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
         
         save_log(f" camera {camera_list[sid]['id']}"," Connected")
         print_heading(f'Camera no. {data["device_id"]} Registered')  
+        
         
     elif data['device_type'] == 'ipad':        
         ipad_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
                 
         save_log(f" Ipad {ipad_list[sid]['id']}"," Connected")
         print_heading(f'Ipad no. {data["device_id"]} Registered')
+
+    else:
+        print('<<< unknown device trying to register >>>')
+        
 
     await sio.emit('latest_data',get_updated_list())
     print_latest_list()
@@ -166,7 +176,7 @@ def get_updated_list():
     data={
         "camera":sorted(list(camera_list.values()),key=lambda dict: dict['id']),
         "ipad":sorted(list(ipad_list.values()),key=lambda dict: dict['id']),
-        "smartWatch":sorted(list(ipad_list.values()),key=lambda dict: dict['id']),
+        "smartWatch":sorted(list(smart_watch_list.values()),key=lambda dict: dict['id']),
         }
     return  data
 
