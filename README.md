@@ -1,4 +1,4 @@
-Central socketIO Server for drowning detection mobile devices
+Central socketIO Server for resource detection mobile devices -- hospital use
 
 # Start server
 
