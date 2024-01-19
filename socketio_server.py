@@ -11,7 +11,8 @@ import json
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 ipad_list = {} #Data Example: same as camera list
 smart_watch_list ={} #Data Example: same as camera list
-
+rack_list = {}# {rack_id : {layer1:state,layer2:state.....}}
+camera_rack_match ={}# data framework  { camera_d : rack_id,.....}
 
 #=============== log directory checking===================================
 if not os.path.exists("./log/"):
@@ -30,6 +31,8 @@ def connect(sid, environ):
     print('new device socket ID:',sid)
 
 #================ Devices Register =======================
+    
+
 @sio.event
 async def register(sid, data):
 
@@ -49,9 +52,14 @@ async def register(sid, data):
 
     elif data["device_type"] == 'camera': 
         camera_list[sid] = {'id':data["device_id"],'state':'connected','type':data["device_type"]}
-        
+        camera_rack_match[data["device_id"]] = []
+        for rack_id in data['rack']:
+            rack_list[rack_id] = data['rack'][rack_id]
+            camera_rack_match[data["device_id"]].append(rack_id)
+
+
         save_log(f" camera {camera_list[sid]['id']}"," Connected")
-        print_heading(f'Camera no. {data["device_id"]} Registered')  
+        print_heading(f'Camera no. {data["device_id"]} Registered')
         
         
     elif data['device_type'] == 'ipad':        
@@ -80,10 +88,17 @@ async def disconnect(sid):
     if sid in camera_list:
         print_heading(f"Camera no. {camera_list[sid]['id']} Disconnected")
         save_log(f" camera {camera_list[sid]['id']}"," Disconnected")
+        
+        for rack_id in camera_rack_match[camera_list[sid]['id']]:
+            for layer in rack_list[rack_id]:
+                rack_list[rack_id][layer] = 'unknown' 
+
         try:
             camera_list.pop(sid)
         except:
             print('camera sid already deleted')
+
+
         await sio.emit('latest_data',get_updated_list())
         print_latest_list()
     elif sid in ipad_list:
@@ -112,46 +127,48 @@ async def disconnect(sid):
 
 #=================== Mobile Device's Event ====================
 @sio.event
-async def cancel_alarm(sid, data):
-    for i in camera_list:
-        if camera_list[i]['id'] == data['camera_id']:
+async def request_photo(sid, data):
+    # not yet done this part
 
-            print_heading('Alarm Canceled')
-            print('camera_id:',data['camera_id'])
+    # target camera id in data
 
-            save_log(f" ipad {ipad_list[sid]['id']}",f" canceled camera {camera_list[i]['id']} - {camera_list[i]['state']}")
-            camera_list[i]['state'] = 'connected'
-            await sio.emit('latest_data',get_updated_list())
+    #sio.emit('take_photo',{},'< target camnera >')
 
-            print_latest_list()
-            break
+    #reply by 'request_photo'
     
-#=================== Camera's Alarm Events ====================
-
+    return
+#=================== Camera's Event ====================
 @sio.event
-async def yellow_alarm(sid, data):
-    camera_list[sid]['state']='yellow_alarm'
-    await sio.emit('yellow_alarm',{'camera_id':camera_list[sid]['id']})
-    await sio.emit('latest_data',get_updated_list())
+async def send_photo(sid, data):
 
-    print_heading('!! Yellow Alarm !!')
-    print('camera_id:',camera_list[sid]['id'],' in yellow alarm!')
+    # not yet done this part
 
-    save_log(f" camera {camera_list[sid]['id']}"," Yellow Alarm")
-    print_latest_list()
+    # target devices id in data
 
+    return
+            
+    
+#=================== Rack's State Events ====================
+        
+#rack_data = {'rack_id':1,'rack_state':{1:'unknown',2:'unknown',...}}
 @sio.event
-async def red_alarm(sid, data):
-    camera_list[sid]['state']='red_alarm'
-    await sio.emit('red_alarm',{'camera_id':camera_list[sid]['id']})
+async def update_rack_state(sid, rack_data):
+
+    print_heading('!! Rack State Updated !!')
+
+    rack_id = rack_data['rack_id'] 
+    for i in rack_list[rack_id].keys():        
+        if rack_list[rack_id][i] != rack_data['rack_state'][i]:            
+            rack_list[rack_id][i] = rack_data['rack_state'][i]
+            save_log(f" Rack {rack_id} layer {i}",f" {rack_data['rack_state'][i]}")
+
+            print(f" Rack {rack_id} layer {i} changed to {rack_data['rack_state'][i]}")
+
     await sio.emit('latest_data',get_updated_list())
+    print_latest_list()  
 
-    print_heading('!!! Red Alarm !!!')
-    print('camera_id:',camera_list[sid]['id'],' in red alarm!')
 
-    save_log(f" camera {camera_list[sid]['id']}"," Red Alarm")
-    print_latest_list()
-#========= Functions==========
+#========= Functions ==========
 
 def print_latest_list():        
         print('<<<<<<   Latest Lists   >>>>>>')
@@ -171,12 +188,18 @@ def print_latest_list():
         for camera in temp_camera_list:
             print(camera['type'],camera['id'],camera['state'])
         
+        print('-------- Rack List --------')
+        temp_rack_list = sorted(list(rack_list.items()))
+        for rack , state in temp_rack_list:
+            print(f"rack {rack}, {state}")
+        
 
 def get_updated_list():
     data={
         "camera":sorted(list(camera_list.values()),key=lambda dict: dict['id']),
         "ipad":sorted(list(ipad_list.values()),key=lambda dict: dict['id']),
         "smartWatch":sorted(list(smart_watch_list.values()),key=lambda dict: dict['id']),
+        "rack":sorted(list(rack_list.items()))
         }
     return  data
 
@@ -204,7 +227,7 @@ def print_heading(heading):
 #=================== Start SocketIO Server ====================
 
 def central_server_start(port):
-    print_heading('SocketIO Server Start')
+    print_heading(' SocketIO Server Start ')
     save_log(" central server"," Started")
     web.run_app(app,port=port)
 
