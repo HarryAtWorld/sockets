@@ -11,7 +11,7 @@ import json
 camera_list = {} #Data Example: {Ejh3gs6d8SHG8 : {id:1, state:'connected',type:'camera'}, JD2ij24IJ2dbi5 : {id:2, state:'yellow_alarm',type:'camera'}}
 ipad_list = {} #Data Example: same as camera list
 smart_watch_list ={} #Data Example: same as camera list
-rack_list = {}# {rack_id : {layer1:state,layer2:state.....}}
+rack_list = {}# {rack_id : [layer1_state,layer_state.....]}
 camera_rack_match ={}# data framework  { camera_d : rack_id,.....}
 
 #=============== log directory checking===================================
@@ -46,8 +46,7 @@ async def register(sid, data):
             print_heading(f'Smart watch no. {data["device_id"]} Registered')
 
         else:
-            print('<<< unknown device trying to register >>>')
-            
+            print('<<< unknown device trying to register >>>')           
 
 
     elif data["device_type"] == 'camera': 
@@ -56,7 +55,6 @@ async def register(sid, data):
         for rack_id in data['rack']:
             rack_list[rack_id] = data['rack'][rack_id]
             camera_rack_match[data["device_id"]].append(rack_id)
-
 
         save_log(f" camera {camera_list[sid]['id']}"," Connected")
         print_heading(f'Camera no. {data["device_id"]} Registered')
@@ -85,14 +83,19 @@ async def request_latest_data(sid,data):
 #================ When Device Disconnected =====================
 @sio.event
 async def disconnect(sid):
+    global rack_list
     if sid in camera_list:
         print_heading(f"Camera no. {camera_list[sid]['id']} Disconnected")
         save_log(f" camera {camera_list[sid]['id']}"," Disconnected")
         
-        for rack_id in camera_rack_match[camera_list[sid]['id']]:
-            for layer in rack_list[rack_id]:
-                rack_list[rack_id][layer] = 'unknown' 
-
+        
+           
+        rack_list = {
+            '1':[['unknown','unknown'], ['unknown','unknown'], ['unknown','unknown'], ['unknown','unknown']],
+            '2':[['unknown','unknown'], ['unknown','unknown'], ['unknown','unknown'], ['empty','empty']]
+                
+            }    
+        
         try:
             camera_list.pop(sid)
         except:
@@ -150,19 +153,19 @@ async def send_photo(sid, data):
     
 #=================== Rack's State Events ====================
         
-#rack_data = {'rack_id':1,'rack_state':{1:'unknown',2:'unknown',...}}
+#rack_data = {'rack_id':1,'rack_state':['unknown','unknown',...]}
 @sio.event
 async def update_rack_state(sid, rack_data):
 
     print_heading('!! Rack State Updated !!')
 
     rack_id = rack_data['rack_id'] 
-    for i in rack_list[rack_id].keys():        
-        if rack_list[rack_id][i] != rack_data['rack_state'][i]:            
-            rack_list[rack_id][i] = rack_data['rack_state'][i]
-            save_log(f" Rack {rack_id} layer {i}",f" {rack_data['rack_state'][i]}")
+    rack_list[rack_id] = rack_data['rack_state'] 
 
-            print(f" Rack {rack_id} layer {i} changed to {rack_data['rack_state'][i]}")
+    # rack_list[rack_data['rack_id']]=rack_data['rack_state']
+    save_log(f" Rack {rack_id} ",f" new state: {rack_data['rack_state']}")
+
+    print(f" Rack {rack_id} new state: {rack_data['rack_state']}")
 
     await sio.emit('latest_data',get_updated_list())
     print_latest_list()  
@@ -194,7 +197,7 @@ def print_latest_list():
             print(f"rack {rack}, {state}")
         
 
-def get_updated_list():
+def get_updated_list():  
     data={
         "camera":sorted(list(camera_list.values()),key=lambda dict: dict['id']),
         "ipad":sorted(list(ipad_list.values()),key=lambda dict: dict['id']),

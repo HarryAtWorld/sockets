@@ -1,12 +1,7 @@
-dir = {}
+bb = [3,4,5]
 
-dir['1'] = {"f":"rrrrr"}
-dir['6'] = {"f":"hhhhh"}
-dir['5'] = {"f":"hhhhh"}
-dir['2'] = {"f":"hhhhh"}
+ll = list(map(lambda x: "h",bb))
 
-a = sorted(list(dir.items()))
-
-print(dir.items())
+print(ll)
 
 
