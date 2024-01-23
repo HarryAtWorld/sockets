@@ -22,17 +22,24 @@ while True:
     if i>999:
         i=0
 
-    time.sleep(2)
-    socketio_camera.update_rack(1,[['red_state','green_state'],['yellow_state','green_state'],['green_state','green_state'],['yellow_state','red_state']])
-    print('rack state changed: counter ', i)
-    time.sleep(2)
-    socketio_camera.update_rack(2,[['green_state','green_state'],['red_state','green_state'],['yellow_state','red_state'],['empty','empty']])
+    socketio_camera.update_rack_raw([0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    time.sleep(1)
+    socketio_camera.update_rack_raw([1,0,0,0,1,0,0,0,0,0,2,1,0,2])
+    time.sleep(1)
+    socketio_camera.update_rack_raw([1,0,1,0,1,0,0,1,0,1,2,2,1,1])
+    time.sleep(1)
 
-    time.sleep(2)
-    socketio_camera.update_rack(1,[['yellow_state','red_state'],['yellow_state','red_state'],['yellow_state','green_state'],['red_state','green_state']])
-    print('rack state changed: counter ', i)
-    time.sleep(2)
-    socketio_camera.update_rack(2,[['red_state','green_state'],['red_state','green_state'],['yellow_state','green_state'],['empty','empty']])
+    # time.sleep(2)
+    # socketio_camera.update_rack(1,[['red_state','green_state'],['yellow_state','green_state'],['green_state','green_state'],['yellow_state','red_state']])
+    # print('rack state changed: counter ', i)
+    # time.sleep(2)
+    # socketio_camera.update_rack(2,[['green_state','green_state'],['red_state','green_state'],['yellow_state','red_state'],['empty','empty']])
+
+    # time.sleep(2)
+    # socketio_camera.update_rack(1,[['yellow_state','red_state'],['yellow_state','red_state'],['yellow_state','green_state'],['red_state','green_state']])
+    # print('rack state changed: counter ', i)
+    # time.sleep(2)
+    # socketio_camera.update_rack(2,[['red_state','green_state'],['red_state','green_state'],['yellow_state','green_state'],['empty','empty']])
 
 
 
