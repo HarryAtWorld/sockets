@@ -53,7 +53,7 @@ def update_rack_raw(rs):
         '0':'green_state',
         '1':'yellow_state',
         '2':'red_state',
-    }
+        }
 
     rack1 = [[state[str(rs[0])],state[str(rs[1])]],
              [state[str(rs[4])],state[str(rs[5])]],
@@ -75,6 +75,9 @@ def update_rack_raw(rs):
         except:
             print('re-trying, update rack state')
             sio.sleep(2)
+
+def closeConnection():
+    sio.disconnect()
 
 
 #=====================Socket IO Events===========================
