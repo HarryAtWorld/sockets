@@ -27,6 +27,9 @@ def connect_server(camera_id,server_ip):
 
     sio.wait()
 
+def closeConnection():
+    sio.disconnect()
+
 def yellow_alarm():
     while True:        
         try:
