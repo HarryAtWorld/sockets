@@ -227,9 +227,9 @@ def print_latest_list():
 
 def get_updated_list():
     data={
-        "camera":list(camera_list.values()),
-        "ipad":list(ipad_list.values()),
-        "smartWatch":list(watch_list.values()),
+        "cameras":list(camera_list.values()),
+        "ipads":list(ipad_list.values()),
+        "smartWatches":list(watch_list.values()),
         }
     return  data
 
