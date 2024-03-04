@@ -2,18 +2,21 @@
 
 import socketio
 
-device_type = "camera"
+device_type = "edge_computer"
 device_id = 999
 socket_sever = ""
+cameras=[]
 sio = socketio.Client()
 
 #===================export functions=============================
 
-def connect_server(camera_id,server_ip):
+def connect_server(computer_id,camera_list,server_ip):
 
     global device_id
     global socket_sever
-    device_id=camera_id
+    global cameras
+    device_id=computer_id
+    cameras = camera_list
     socket_sever = server_ip
 
     #in case of client start connection while server is not yet set up.
@@ -30,23 +33,32 @@ def connect_server(camera_id,server_ip):
 def closeConnection():
     sio.disconnect()
 
-def yellow_alarm():
+def yellow_alarm(camera_id):
     while True:        
         try:
-            sio.emit('yellow_alarm',{})
+            sio.emit('yellow_alarm',{"camera_id":camera_id})
             break
         except:
-            print('re-trying, yellow alarm')
+            print('re-trying, yellow alarm sending')
             sio.sleep(1)
 
 
-def red_alarm():
+def red_alarm(camera_id):
     while True:        
         try:
-            sio.emit('red_alarm',{})
+            sio.emit('red_alarm',{"camera_id":camera_id})
             break
         except:
-            print('re-trying, red alarm')
+            print('re-trying, red alarm sending')
+            sio.sleep(1)
+
+def camera_error(camera_id):
+    while True:
+        try:
+            sio.emit('camera_error',{"camera_id":camera_id})
+            break
+        except:
+            print('re-trying, camera error message sending')
             sio.sleep(1)
 
 #=====================Socket IO Events===========================
@@ -54,7 +66,7 @@ def red_alarm():
 @sio.event
 def connect():
     print('== Server Connected ==')
-    sio.emit("register",{"device_type":device_type,"device_id":device_id})
+    sio.emit("register",{"device_type":device_type,"computer_id":device_id,"camera_list":cameras})
     
 @sio.event
 def disconnect():
@@ -62,7 +74,7 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    connect_server(47,"ws://localhost:12000")
+    connect_server(1,[5,6,7],"ws://localhost:12000")
 
 
 

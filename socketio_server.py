@@ -42,9 +42,9 @@ watch_list={
     3:{'id':3, 'state':'disconnected','type':'smart_watch'},
 }
 
-camera_connection_list = {} #  {socket_id : camera_list[camera_id],...} --> Data Example: {Ejh3gs6d8SHG8 :{'id':1, 'state':'disconnected','type':'camera'},...}
-ipad_connection_list = {} #Data Example: same as camera connection list
-watch_connection_list ={} #Data Example: same as camera  connection list
+camera_connection_list = {} # {socket_id : [camera_id,...]} --> Data Example: {Ejh3gs6d8SHG8 :[1,3,5,6.....]}
+ipad_connection_list = {} # {socket_id : ipad_id} --> Data Example: {FsddsffhIU3:1,JHDYeEJjYGE:2,...}
+watch_connection_list ={} #{socket_id : watch_id} --> Data Example: same as ipad connection list
 
 
 #=============== log directory checking===================================
@@ -71,10 +71,10 @@ async def register(sid, data):
         data = json.loads(data)
 
         if data['device_type'] == 'smart_watch':
-            watch_connection_list[sid] =  watch_list[data['device_id']]
-            watch_connection_list[sid]['state'] = 'connected'
+            watch_connection_list[sid] =  data['device_id']
+            watch_list[data['device_id']]['state'] = 'connected'
             
-            save_log(f" smart watch no. {watch_connection_list[sid]['id']}"," Connected")
+            save_log(f" smart watch no. {data['device_id']}"," Connected")
             print_heading(f'Smart watch no. {data["device_id"]} Registered')
 
         else:
@@ -82,19 +82,20 @@ async def register(sid, data):
             
 
 
-    elif data["device_type"] == 'camera':
-        camera_connection_list[sid] = camera_list[data['device_id']]
-        camera_connection_list[sid]['state'] = 'connected'
-        
-        save_log(f" camera {camera_connection_list[sid]['id']}"," Connected")
-        print_heading(f'Camera no. {data["device_id"]} Registered')  
+    elif data["device_type"] == 'edge_computer':
+        camera_connection_list[sid] = data['camera_list']
+        for camera_id in data['camera_list']:
+            camera_list[camera_id]['state'] = 'connected'
+            save_log(f" camera {camera_id}"," Connected")     
+                
+        print_heading(f'Camera no. {data["camera_list"]} Registered')  
         
         
     elif data['device_type'] == 'ipad':        
-        ipad_connection_list[sid] = ipad_list[data['device_id']]
-        ipad_connection_list[sid]['state'] = 'connected'
+        ipad_connection_list[sid] = data['device_id']
+        ipad_list[data['device_id']]['state'] = 'connected'
                 
-        save_log(f" Ipad {ipad_connection_list[sid]['id']}"," Connected")
+        save_log(f" Ipad {data['device_id']}"," Connected")
         print_heading(f'Ipad no. {data["device_id"]} Registered')
 
     else:
@@ -115,10 +116,12 @@ async def request_latest_data(sid,data):
 @sio.event
 async def disconnect(sid):
     if sid in camera_connection_list:
-        print_heading(f"Camera no. {camera_connection_list[sid]['id']} Disconnected")
-        save_log(f" camera {camera_connection_list[sid]['id']}"," Disconnected")
+        print_heading(f"Camera no. {camera_connection_list[sid]} Disconnected")
+        save_log(f" camera {camera_connection_list[sid]}"," Disconnected")
         try:
-            camera_connection_list[sid]['state'] = 'disconnected'
+
+            for camera_id in camera_connection_list[sid]:
+                camera_list[camera_id]['state'] = 'disconnected'
             camera_connection_list.pop(sid)
             
         except:
@@ -126,10 +129,10 @@ async def disconnect(sid):
         await sio.emit('latest_data',get_updated_list())
         print_latest_list()
     elif sid in ipad_connection_list:
-        print_heading(f"Ipad no. {ipad_connection_list[sid]['id']} Disconnected")
-        save_log(f" ipad no. {ipad_connection_list[sid]['id']}"," Disconnected")
+        print_heading(f"Ipad no. {ipad_connection_list[sid]} Disconnected")
+        save_log(f" ipad no. {ipad_connection_list[sid]}"," Disconnected")
         try:
-            ipad_connection_list[sid]['state'] = 'disconnected'
+            ipad_list[ipad_connection_list[sid]]['state'] = 'disconnected'
             ipad_connection_list.pop(sid)
         except:
             print("ipad sid already deleted")
@@ -137,10 +140,10 @@ async def disconnect(sid):
         
         print_latest_list()
     elif sid in watch_connection_list:
-        print_heading(f"Smart watch no. {watch_connection_list[sid]['id']} Disconnected")
-        save_log(f" smart watch no. {watch_connection_list[sid]['id']}"," Disconnected")
+        print_heading(f"Smart watch no. {watch_connection_list[sid]} Disconnected")
+        save_log(f" smart watch no. {watch_connection_list[sid]}"," Disconnected")
         try:
-            watch_connection_list[sid]['state'] = 'disconnected'
+            watch_list[watch_connection_list[sid]]['state'] = 'disconnected'
             watch_connection_list.pop(sid)
         except:
             print("smart watch sid already deleted")
@@ -168,26 +171,38 @@ async def cancel_alarm(sid, data):
 
 @sio.event
 async def yellow_alarm(sid, data):
-    camera_connection_list[sid]['state']='yellow_alarm'
-    await sio.emit('yellow_alarm',{'camera_id':camera_connection_list[sid]['id']})
+    camera_list[data['camera_id']]['state']='yellow_alarm'
+    await sio.emit('yellow_alarm',{'camera_id':data['camera_id']})
     await sio.emit('latest_data',get_updated_list())
 
     print_heading('!! Yellow Alarm !!')
-    print('camera_id:',camera_connection_list[sid]['id'],' in yellow alarm!')
+    print('camera_id:',data['camera_id'],' in yellow alarm!')
 
-    save_log(f" camera {camera_connection_list[sid]['id']}"," Yellow Alarm")
+    save_log(f" camera {data['camera_id']}"," Yellow Alarm")
     print_latest_list()
 
 @sio.event
 async def red_alarm(sid, data):
-    camera_connection_list[sid]['state']='red_alarm'
-    await sio.emit('red_alarm',{'camera_id':camera_connection_list[sid]['id']})
+    camera_list[data['camera_id']]['state']='red_alarm'
+    await sio.emit('red_alarm',{'camera_id':data['camera_id']})
     await sio.emit('latest_data',get_updated_list())
 
     print_heading('!!! Red Alarm !!!')
-    print('camera_id:',camera_connection_list[sid]['id'],' in red alarm!')
+    print('camera_id:',data['camera_id'],' in red alarm!')
 
-    save_log(f" camera {camera_connection_list[sid]['id']}"," Red Alarm")
+    save_log(f" camera {data['camera_id']}"," Red Alarm")
+    print_latest_list()
+
+@sio.event
+async def camera_error(sid, data):
+    camera_list[data['camera_id']]['state']='error'
+    await sio.emit('camera_error',{'camera_id':data['camera_id']})
+    await sio.emit('latest_data',get_updated_list())
+
+    print_heading('!!! Camera Error!!!')
+    print('camera_id:',data['camera_id'],' in error!')
+
+    save_log(f" camera {data['camera_id']}"," Error")
     print_latest_list()
 #========= Functions==========
 
