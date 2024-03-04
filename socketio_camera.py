@@ -34,6 +34,10 @@ def closeConnection():
     sio.disconnect()
 
 def yellow_alarm(camera_id):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
+
     while True:        
         try:
             sio.emit('yellow_alarm',{"camera_id":camera_id})
@@ -44,6 +48,9 @@ def yellow_alarm(camera_id):
 
 
 def red_alarm(camera_id):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
     while True:        
         try:
             sio.emit('red_alarm',{"camera_id":camera_id})
@@ -53,6 +60,9 @@ def red_alarm(camera_id):
             sio.sleep(1)
 
 def camera_error(camera_id):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
     while True:
         try:
             sio.emit('camera_error',{"camera_id":camera_id})
