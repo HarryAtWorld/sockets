@@ -17,7 +17,7 @@ camera_list={
     8:{'id':8, 'state':'disconnected','type':'camera'},
     9:{'id':9, 'state':'disconnected','type':'camera'},
     10:{'id':10, 'state':'disconnected','type':'camera'},
-    11:{'id':12, 'state':'disconnected','type':'camera'},
+    11:{'id':11, 'state':'disconnected','type':'camera'},
     28:{'id':28, 'state':'disconnected','type':'camera'},
     33:{'id':33, 'state':'disconnected','type':'camera'},
     37:{'id':37, 'state':'disconnected','type':'camera'},
@@ -160,7 +160,7 @@ async def cancel_alarm(sid, data):
     print_heading('Alarm Canceled')
     print('camera_id:',data['camera_id'])
 
-    save_log(f" ipad {ipad_connection_list[sid]['id']}",f" canceled camera {data['camera_id']} - {camera_list[data['camera_id']]['state']}")
+    save_log(f" ipad {ipad_list[ipad_connection_list[sid]]['id']}",f" canceled camera {data['camera_id']} - {camera_list[data['camera_id']]['state']}")
     camera_list[data['camera_id']]['state'] = 'connected'
     await sio.emit('latest_data',get_updated_list())
 
@@ -210,19 +210,19 @@ def print_latest_list():
         print('<<<<<<   Latest Lists   >>>>>>')
 
         print('----- Mobile Device List -----')        
-        for mobile in ipad_list:
-            if mobile['state'] != 'disconnected':
-                print(mobile['type'], mobile['id'],mobile['state'])
+        for id in ipad_list:
+            if ipad_list[id]['state'] != 'disconnected':
+                print(ipad_list[id]['type'], ipad_list[id]['id'],ipad_list[id]['state'])
 
         print('------ Smart Watch List ------')        
-        for watch in watch_list:
-            if watch['state'] != 'disconnected':
-                print(watch['type'], watch['id'],watch['state'])      
+        for id in watch_list:
+            if watch_list[id]['state'] != 'disconnected':
+                print(watch_list[id]['type'], watch_list[id]['id'],watch_list[id]['state'])      
 
         print('-------- Cameras List --------')        
-        for camera in camera_list:
-            if camera['state'] != 'disconnected':
-                print(camera['type'],camera['id'],camera['state'])
+        for id in camera_list:
+            if camera_list[id]['state'] != 'disconnected':
+                print(camera_list[id]['type'],camera_list[id]['id'],camera_list[id]['state'])
         
 
 def get_updated_list():
@@ -230,7 +230,7 @@ def get_updated_list():
         "cameras":list(camera_list.values()),
         "ipads":list(ipad_list.values()),
         "smartWatches":list(watch_list.values()),
-        }
+        }    
     return  data
 
 
