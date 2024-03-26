@@ -15,16 +15,18 @@ Socketio.start()
 #for example, sent alarm to server every x second.
 
 i=0
-
+# socketio_camera.red_alarm(28)
 
 for i in camera_list:
     if i >28:
         socketio_camera.yellow_alarm(i)
         print('-')
     else:
-        socketio_camera.red_alarm(i)
+        socketio_camera.yellow_alarm(i)
         print('-')
     time.sleep(0.5)
+
+socketio_camera.red_alarm(28)
 
 # while True:
 #     i+=1
