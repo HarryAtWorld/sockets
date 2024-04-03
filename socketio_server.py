@@ -17,7 +17,7 @@ camera_list={
     8:{'id':8, 'state':'disconnected','type':'camera'},
     9:{'id':9, 'state':'disconnected','type':'camera'},
     10:{'id':10, 'state':'disconnected','type':'camera'},
-    11:{'id':11, 'state':'disconnected','type':'camera'},
+    12:{'id':12, 'state':'disconnected','type':'camera'},
     28:{'id':28, 'state':'disconnected','type':'camera'},
     33:{'id':33, 'state':'disconnected','type':'camera'},
     37:{'id':37, 'state':'disconnected','type':'camera'},
