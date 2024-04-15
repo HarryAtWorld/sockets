@@ -157,6 +157,11 @@ async def disconnect(sid):
 #=================== Mobile Device's Event ====================
 @sio.event
 async def cancel_alarm(sid, data):
+
+    if camera_list[data['camera_id']]['state'] == 'disconnected':
+        print('!!! Cancel Fail - alarmed camera already offline!!!')
+        return
+    
     print_heading('Alarm Canceled')
     print('camera_id:',data['camera_id'])
 
@@ -171,6 +176,10 @@ async def cancel_alarm(sid, data):
 
 @sio.event
 async def yellow_alarm(sid, data):
+    if camera_list[data['camera_id']]['state']=='red_alarm':
+        print('--- camera already on red alarm ---')
+        return
+    
     camera_list[data['camera_id']]['state']='yellow_alarm'
     await sio.emit('yellow_alarm',{'camera_id':data['camera_id']})
     await sio.emit('latest_data',get_updated_list())
