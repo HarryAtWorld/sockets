@@ -8,6 +8,12 @@ from aiohttp import web
 import os
 import json
 
+computer_list = {
+    1:{'id':1, 'state':'disconnected','type':'edge_computer'},
+    2:{'id':2, 'state':'disconnected','type':'edge_computer'},
+    3:{'id':3, 'state':'disconnected','type':'edge_computer'},
+}
+
 camera_list={
     1:{'id':1, 'state':'disconnected','type':'camera'},
     3:{'id':3, 'state':'disconnected','type':'camera'},
@@ -45,6 +51,7 @@ watch_list={
 camera_connection_list = {} # {socket_id : [camera_id,...]} --> Data Example: {Ejh3gs6d8SHG8 :[1,3,5,6.....]}
 ipad_connection_list = {} # {socket_id : ipad_id} --> Data Example: {FsddsffhIU3:1,JHDYeEJjYGE:2,...}
 watch_connection_list ={} #{socket_id : watch_id} --> Data Example: same as ipad connection list
+computer_connection_list = {}#{socket_id : computer_id} --> Data Example: same as ipad connection list
 
 
 #=============== log directory checking===================================
@@ -83,10 +90,17 @@ async def register(sid, data):
 
 
     elif data["device_type"] == 'edge_computer':
+        computer_connection_list[sid] = data['computer_id']
+        computer_list[data['computer_id']]['state'] = 'connected'
+
         camera_connection_list[sid] = data['camera_list']
+
+        #check if camera already connected
+
         for camera_id in data['camera_list']:
-            camera_list[camera_id]['state'] = 'connected'
-            save_log(f" camera {camera_id}"," Connected")     
+            if camera_list[camera_id]['state'] == 'disconnected' or camera_list[camera_id]['state'] =='error' :
+                camera_list[camera_id]['state'] = 'connected'
+                save_log(f" camera {camera_id}"," Connected")     
                 
         print_heading(f'Camera no. {data["camera_list"]} Registered')  
         
@@ -115,40 +129,70 @@ async def request_latest_data(sid,data):
 #================ When Device Disconnected =====================
 @sio.event
 async def disconnect(sid):
-    if sid in camera_connection_list:
-        print_heading(f"Camera no. {camera_connection_list[sid]} Disconnected")
-        save_log(f" camera {camera_connection_list[sid]}"," Disconnected")
-        try:
+    # if sid in camera_connection_list:
+    if sid in computer_connection_list:
+        # check if computer reconnected on other sid
+        computer_id = computer_connection_list[sid]
+        count = list(computer_connection_list.values()).count(computer_id)
+        if count == 1:
+            print_heading(f"Camera no. {camera_connection_list[sid]} Disconnected")
+            save_log(f" camera {camera_connection_list[sid]}"," Disconnected")
+            try:
+                computer_list[computer_id]['state'] = 'disconnected'
+                for camera_id in camera_connection_list[sid]:
+                    camera_list[camera_id]['state'] = 'disconnected'                                
+            except:
+                print('error on update camera/coomputer disconnect state')
 
-            for camera_id in camera_connection_list[sid]:
-                camera_list[camera_id]['state'] = 'disconnected'
+        try:
+            computer_connection_list.pop(sid)
             camera_connection_list.pop(sid)
-            
         except:
-            print('camera sid already deleted')
+            print('camera/computer connection sid already deleted')
+
         await sio.emit('latest_data',get_updated_list())
         print_latest_list()
+
+
     elif sid in ipad_connection_list:
-        print_heading(f"Ipad no. {ipad_connection_list[sid]} Disconnected")
-        save_log(f" ipad no. {ipad_connection_list[sid]}"," Disconnected")
-        try:
-            ipad_list[ipad_connection_list[sid]]['state'] = 'disconnected'
+        # check if ipad reconnected on other sid
+        ipad_id = ipad_connection_list[sid]
+        count = list(ipad_connection_list.values()).count(ipad_id)
+        if count ==1:
+            print_heading(f"Ipad no. {ipad_connection_list[sid]} Disconnected")
+            save_log(f" ipad no. {ipad_connection_list[sid]}"," Disconnected")
+            try:
+                ipad_list[ipad_connection_list[sid]]['state'] = 'disconnected'                
+            except:
+                print("error on update ipad disconnect state")
+
+        try:           
             ipad_connection_list.pop(sid)
         except:
-            print("ipad sid already deleted")
-        await sio.emit('latest_data',get_updated_list())
-        
+            print("ipad sid already deleted")         
+            
+        await sio.emit('latest_data',get_updated_list())        
         print_latest_list()
+
     elif sid in watch_connection_list:
-        print_heading(f"Smart watch no. {watch_connection_list[sid]} Disconnected")
-        save_log(f" smart watch no. {watch_connection_list[sid]}"," Disconnected")
-        try:
-            watch_list[watch_connection_list[sid]]['state'] = 'disconnected'
+        # check if watch reconnected on other sid
+        watch_id = watch_connection_list[sid]
+        count = list(watch_connection_list.values()).count(watch_id)
+        if count ==1 :            
+            print_heading(f"Smart watch no. {watch_connection_list[sid]} Disconnected")
+            save_log(f" smart watch no. {watch_connection_list[sid]}"," Disconnected")
+            try:
+                watch_list[watch_connection_list[sid]]['state'] = 'disconnected'                
+            except:
+                print("error on update smart watch disconnect state")
+
+        try:            
             watch_connection_list.pop(sid)
         except:
             print("smart watch sid already deleted")
-        await sio.emit('latest_data',get_updated_list())
-        
+
+
+        await sio.emit('latest_data',get_updated_list())   
         print_latest_list()
 
     else:
