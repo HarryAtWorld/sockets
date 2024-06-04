@@ -55,8 +55,8 @@ computer_connection_list = {}#{socket_id : computer_id} --> Data Example: same a
 
 
 #=============== log directory checking===================================
-if not os.path.exists("/home/nvidia/sockets/log/"):
-    os.makedirs("/home/nvidia/sockets/log/") 
+if not os.path.exists("/home/hkuit/sockets/log/"):
+    os.makedirs("/home/hkuit/sockets/log/") 
 
 #=============== SocketIO Setting ===================================
 
@@ -290,7 +290,7 @@ def get_updated_list():
 def save_log(id,message):
 
     dt = datetime.now()
-    file_name = f"/home/nvidia/sockets/log/{dt.year}-{dt.month}-{dt.day}.txt"
+    file_name = f"/home/hkuit/sockets/log/{dt.year}-{dt.month}-{dt.day}.txt"
 
     with open(file_name, "a") as log:
         log.write(f"{dt},{id},{message}\n")
