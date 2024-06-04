@@ -71,6 +71,18 @@ def camera_error(camera_id):
             print('re-trying, camera error message sending')
             sio.sleep(1)
 
+def camera_resumed(camera_id):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
+    while True:
+        try:
+            sio.emit('camera_resumed',{"camera_id":camera_id})
+            break
+        except:
+            print('re-trying, camera error message sending')
+            sio.sleep(1)
+
 #=====================Socket IO Events===========================
 
 @sio.event

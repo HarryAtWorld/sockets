@@ -257,6 +257,18 @@ async def camera_error(sid, data):
 
     save_log(f" camera {data['camera_id']}"," Error")
     print_latest_list()
+
+@sio.event
+async def camera_resumed(sid, data):
+    camera_list[data['camera_id']]['state']='connected'
+    # await sio.emit('camera_resumed',{'camera_id':data['camera_id']})
+    await sio.emit('latest_data',get_updated_list())
+
+    print_heading('!!! Camera Resumed!!!')
+    print('camera_id:',data['camera_id'],' resumed!')
+
+    save_log(f" camera {data['camera_id']}"," Camera Resumed")
+    print_latest_list()
 #========= Functions==========
 
 def print_latest_list():        

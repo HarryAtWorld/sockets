@@ -33,18 +33,25 @@ while True:
     if i>999:
         i=0
 
-    for i in camera_list:
-        if i >28:
-            socketio_camera.yellow_alarm(i)
-            print('-')
-        else:
-            socketio_camera.yellow_alarm(i)
-            print('-')
-        time.sleep(1)
+    # for i in camera_list:
+    #     if i >28:
+    #         socketio_camera.yellow_alarm(i)
+    #         print('-')
+    #     else:
+    #         socketio_camera.yellow_alarm(i)
+    #         print('-')
+    #     time.sleep(1)
 
-    socketio_camera.red_alarm(28)
+    socketio_camera.yellow_alarm(5)
+    time.sleep(1)
+    socketio_camera.camera_error(5)
+    time.sleep(1)
+    socketio_camera.camera_resumed(5)
+    time.sleep(1)
 
-    time.sleep(10)
+
+
+    time.sleep(1)
 
     
 
