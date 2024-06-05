@@ -80,7 +80,7 @@ def camera_resumed(camera_id):
             sio.emit('camera_resumed',{"camera_id":camera_id})
             break
         except:
-            print('re-trying, camera error message sending')
+            print('re-trying, camera resumed message sending')
             sio.sleep(1)
 
 #=====================Socket IO Events===========================
