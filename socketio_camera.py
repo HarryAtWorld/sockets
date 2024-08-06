@@ -59,6 +59,21 @@ def red_alarm(camera_id):
             print('re-trying, red alarm sending')
             sio.sleep(1)
 
+
+#Not ready for use
+#for display the drowning location. left top is [0,0].
+def alarm_location(camera_id,alarm,x,y):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
+    while True:        
+        try:
+            sio.emit('alarm_location',{"camera_id":camera_id,"alarm":alarm,"x":x,"y":y})
+            break
+        except:
+            print('re-trying, alarm location sending')
+            sio.sleep(1)
+
 def camera_error(camera_id):
     if not camera_id in cameras:
         print('<<<<< Input ID not existed >>>>>')
@@ -69,6 +84,19 @@ def camera_error(camera_id):
             break
         except:
             print('re-trying, camera error message sending')
+            sio.sleep(1)
+
+#for Camera been blocked.
+def camera_blocked(camera_id):
+    if not camera_id in cameras:
+        print('<<<<< Input ID not existed >>>>>')
+        return
+    while True:        
+        try:
+            sio.emit('camera_blocked',{"camera_id":camera_id})
+            break
+        except:
+            print('re-trying, camera blocked sending')
             sio.sleep(1)
 
 def camera_resumed(camera_id):

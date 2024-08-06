@@ -15,23 +15,23 @@ computer_list = {
 }
 
 camera_list={
-    1:{'id':1, 'state':'disconnected','type':'camera'},
-    3:{'id':3, 'state':'disconnected','type':'camera'},
-    5:{'id':5, 'state':'disconnected','type':'camera'},
-    6:{'id':6, 'state':'disconnected','type':'camera'},
-    7:{'id':7, 'state':'disconnected','type':'camera'},
-    8:{'id':8, 'state':'disconnected','type':'camera'},
-    9:{'id':9, 'state':'disconnected','type':'camera'},
-    10:{'id':10, 'state':'disconnected','type':'camera'},
-    12:{'id':12, 'state':'disconnected','type':'camera'},
-    28:{'id':28, 'state':'disconnected','type':'camera'},
-    33:{'id':33, 'state':'disconnected','type':'camera'},
-    37:{'id':37, 'state':'disconnected','type':'camera'},
-    41:{'id':41, 'state':'disconnected','type':'camera'},
-    42:{'id':42, 'state':'disconnected','type':'camera'},
-    43:{'id':43, 'state':'disconnected','type':'camera'},
-    45:{'id':45, 'state':'disconnected','type':'camera'},
-    47:{'id':47, 'state':'disconnected','type':'camera'},
+    1:{'id':1, 'state':'disconnected','type':'camera','alarms':[]},
+    3:{'id':3, 'state':'disconnected','type':'camera','alarms':[]},
+    5:{'id':5, 'state':'disconnected','type':'camera','alarms':[]},
+    6:{'id':6, 'state':'disconnected','type':'camera','alarms':[]},
+    7:{'id':7, 'state':'disconnected','type':'camera','alarms':[]},
+    8:{'id':8, 'state':'disconnected','type':'camera','alarms':[]},
+    9:{'id':9, 'state':'disconnected','type':'camera','alarms':[]},
+    10:{'id':10, 'state':'disconnected','type':'camera','alarms':[]},
+    12:{'id':12, 'state':'disconnected','type':'camera','alarms':[]},
+    28:{'id':28, 'state':'disconnected','type':'camera','alarms':[]},
+    33:{'id':33, 'state':'disconnected','type':'camera','alarms':[]},
+    37:{'id':37, 'state':'disconnected','type':'camera','alarms':[]},
+    41:{'id':41, 'state':'disconnected','type':'camera','alarms':[]},
+    42:{'id':42, 'state':'disconnected','type':'camera','alarms':[]},
+    43:{'id':43, 'state':'disconnected','type':'camera','alarms':[]},
+    45:{'id':45, 'state':'disconnected','type':'camera','alarms':[]},
+    47:{'id':47, 'state':'disconnected','type':'camera','alarms':[]},
 }
 
 ipad_list={
@@ -246,6 +246,20 @@ async def red_alarm(sid, data):
     save_log(f" camera {data['camera_id']}"," Red Alarm")
     print_latest_list()
 
+#not ready for use
+@sio.event
+async def alarm_location(sid, data):   
+
+    camera_list[data['camera_id']]['alarms'].append([data['x'],data['y'],data['alarm']])
+    # await sio.emit('red_alarm',{'camera_id':data['camera_id']})
+    await sio.emit('latest_data',get_updated_list())
+
+    print_heading('!!! Red Alarm !!!')
+    print('camera_id:',data['camera_id'],' in red alarm!')
+
+    save_log(f" camera {data['camera_id']}"," Red Alarm")
+    print_latest_list()
+
 @sio.event
 async def camera_error(sid, data):
     camera_list[data['camera_id']]['state']='error'
@@ -256,6 +270,18 @@ async def camera_error(sid, data):
     print('camera_id:',data['camera_id'],' in error!')
 
     save_log(f" camera {data['camera_id']}"," Error")
+    print_latest_list()
+
+@sio.event
+async def camera_blocked(sid, data):
+    camera_list[data['camera_id']]['state']='blocked'
+    await sio.emit('camera_blocked',{'camera_id':data['camera_id']})
+    await sio.emit('latest_data',get_updated_list())
+
+    print_heading('!!! Camera Blocked !!!')
+    print('camera_id:',data['camera_id'],' is blocked!')
+
+    save_log(f" camera {data['camera_id']}"," Blocked")
     print_latest_list()
 
 @sio.event
