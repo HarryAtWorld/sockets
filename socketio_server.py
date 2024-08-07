@@ -142,7 +142,7 @@ async def disconnect(sid):
                 for camera_id in camera_connection_list[sid]:
                     camera_list[camera_id]['state'] = 'disconnected'                                
             except:
-                print('error on update camera/coomputer disconnect state')
+                print('error on update camera/computer disconnect state')
 
         try:
             computer_connection_list.pop(sid)
@@ -246,18 +246,22 @@ async def red_alarm(sid, data):
     save_log(f" camera {data['camera_id']}"," Red Alarm")
     print_latest_list()
 
-#not ready for use
+#!!!!!!!!!!! Not ready for use !!!!!!!!!
 @sio.event
 async def alarm_location(sid, data):   
 
-    camera_list[data['camera_id']]['alarms'].append([data['x'],data['y'],data['alarm']])
-    # await sio.emit('red_alarm',{'camera_id':data['camera_id']})
+    if data['alarm'] in camera_list[data['camera_id']]['alarms']:
+        print('duplicated')
+        return
+
+    camera_list[data['camera_id']]['alarms'].append(data['alarm'])
+    
     await sio.emit('latest_data',get_updated_list())
 
-    print_heading('!!! Red Alarm !!!')
-    print('camera_id:',data['camera_id'],' in red alarm!')
+    print_heading('!!! Alarm !!!')
+    print('camera_id:',data['camera_id'],' in ',data['alarm'])
 
-    save_log(f" camera {data['camera_id']}"," Red Alarm")
+    save_log(f" camera {data['camera_id']}",f"{data['alarm']}")
     print_latest_list()
 
 @sio.event
@@ -313,7 +317,7 @@ def print_latest_list():
         print('-------- Cameras List --------')        
         for id in camera_list:
             if camera_list[id]['state'] != 'disconnected':
-                print(camera_list[id]['type'],camera_list[id]['id'],camera_list[id]['state'])
+                print(camera_list[id]['type'],camera_list[id]['id'],camera_list[id]['state'],camera_list[id]['alarms'])
         
 
 def get_updated_list():

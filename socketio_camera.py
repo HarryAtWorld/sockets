@@ -68,7 +68,7 @@ def alarm_location(camera_id,alarm,x,y):
         return
     while True:        
         try:
-            sio.emit('alarm_location',{"camera_id":camera_id,"alarm":alarm,"x":x,"y":y})
+            sio.emit('alarm_location',{"camera_id":camera_id,"alarm":[x,y,alarm]})
             break
         except:
             print('re-trying, alarm location sending')
