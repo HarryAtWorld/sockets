@@ -201,10 +201,10 @@ async def disconnect(sid):
 
 #=================== Mobile Device's Event ====================
 @sio.event
-async def cancel_alarm(sid, data):
+async def cancel_alarm_location(sid, data):
     #data sample--> {camera_id:"1","alarm":[x,y,red_alarm]}
     
-    print_heading('Alarm Canceled')
+    print_heading('Alarm Location Canceled')
     print('camera_id:',data['camera_id'],data['alarm'])
 
     save_log(f"camera {data['camera_id']}" , f"{data['alarm']} canceled ")

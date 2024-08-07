@@ -74,13 +74,13 @@ def alarm_location(camera_id,alarm,x,y):
             print('re-trying, alarm location sending')
             sio.sleep(1)
 
-def cancel_alarm(camera_id,alarm,x,y):
+def cancel_alarm_location(camera_id,alarm,x,y):
     if not camera_id in cameras:
         print('<<<<< Input ID not existed >>>>>')
         return
     while True:        
         try:
-            sio.emit('cancel_alarm',{"camera_id":camera_id,"alarm":[x,y,alarm]})
+            sio.emit('cancel_alarm_location',{"camera_id":camera_id,"alarm":[x,y,alarm]})
             break
         except:
             print('re-trying, cancel alarm sending')

@@ -57,7 +57,7 @@ while True:
     socketio_camera.alarm_location(5,"red_alarm",77,88)
     socketio_camera.alarm_location(5,"yellow_alarm",999,999)
     time.sleep(3)
-    socketio_camera.cancel_alarm(6,"red_alarm",20,30)
+    socketio_camera.cancel_alarm_location(6,"red_alarm",20,30)
     time.sleep(3)
     socketio_camera.camera_blocked(5)
     time.sleep(3)
