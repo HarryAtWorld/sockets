@@ -139,9 +139,10 @@ async def disconnect(sid):
             save_log(f" camera {camera_connection_list[sid]}"," Disconnected")
             try:
                 computer_list[computer_id]['state'] = 'disconnected'
+                
                 for camera_id in camera_connection_list[sid]:
-                    camera_list[camera_id]['state'] = 'disconnected'  
-                    camera_list[camera_id]['alarms'] = []                              
+                    camera_list[camera_id]['state'] = 'disconnected'     
+                    camera_list[camera_id]['alarms'] = []                                               
             except:
                 print('error on update camera/computer disconnect state')
 
@@ -206,25 +207,32 @@ async def cancel_alarm(sid, data):
     if camera_list[data['camera_id']]['state'] == 'disconnected':
         print('!!! Cancel Fail - alarmed camera already offline!!!')
         return
+    if camera_list[data['camera_id']]['state'] == 'connected':
+        print('!!! Cancel Fail -  camera not in alarm !!!')
+        return
     
-    print_heading('Alarm Canceled')
-    print('camera_id:',data['camera_id'])
+    print_heading('Alarm Canceled')    
 
-    save_log(f" camera {data['camera_id']}",f" canceled - {camera_list[data['camera_id']]['state']}")
+    if ipad_connection_list.get(sid,None):
+        print('camera_id:',data['camera_id'], ' by ',f" ipad {ipad_list[ipad_connection_list[sid]]['id']}")
+
+        save_log(f" ipad {ipad_list[ipad_connection_list[sid]]['id']}",f" canceled camera {data['camera_id']} - {camera_list[data['camera_id']]['state']}")
+    else :
+        print('camera_id:',data['camera_id'])
+        save_log(f" camera {data['camera_id']}",f" {camera_list[data['camera_id']]['state']} canceled ")
     camera_list[data['camera_id']]['state'] = 'connected'
     await sio.emit('latest_data',get_updated_list())
 
     print_latest_list()
 
-
 @sio.event
 async def cancel_alarm_location(sid, data):
-    #data sample--> {camera_id:"1","alarm":[x,y,red_alarm]}
+    #data sample--> {camera_id:"1","alarm":[x,y,'red_alarm']}
     
     print_heading('Alarm Location Canceled')
     print('camera_id:',data['camera_id'],data['alarm'])
 
-    save_log(f"camera {data['camera_id']}" , f"{data['alarm']} canceled ")
+    save_log(f"camera {data['camera_id']}" , f" {data['alarm']} canceled ")
 
     camera_list[data['camera_id']]['alarms'] = list(filter(lambda i: not (i[0] == data['alarm'][0] and i[1] == data['alarm'][1] and i[2] == data['alarm'][2]),camera_list[data['camera_id']]['alarms']))
     await sio.emit('latest_data',get_updated_list())
@@ -262,22 +270,22 @@ async def red_alarm(sid, data):
     save_log(f" camera {data['camera_id']}"," Red Alarm")
     print_latest_list()
 
-#not ready for use
+#!!!!!!!!!!! Not ready for use !!!!!!!!!
 @sio.event
 async def alarm_location(sid, data):   
 
-    if  data['alarm'] in camera_list[data['camera_id']]['alarms']:
+    if data['alarm'] in camera_list[data['camera_id']]['alarms']:
         print('duplicated')
         return
-    
+
     camera_list[data['camera_id']]['alarms'].append(data['alarm'])
-    # await sio.emit('red_alarm',{'camera_id':data['camera_id']})
+    
     await sio.emit('latest_data',get_updated_list())
 
     print_heading('!!! Alarm !!!')
-    print('camera_id:',data['camera_id'],f" in {data['alarm']}!")
+    print('camera_id:',data['camera_id'],' in ',data['alarm'])
 
-    save_log(f" camera {data['camera_id']}",f" {data['alarm']}")
+    save_log(f" camera {data['camera_id']}",f"{data['alarm']}")
     print_latest_list()
 
 @sio.event

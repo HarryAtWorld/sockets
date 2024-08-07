@@ -74,6 +74,7 @@ def alarm_location(camera_id,alarm,x,y):
             print('re-trying, alarm location sending')
             sio.sleep(1)
 
+
 def cancel_alarm_location(camera_id,alarm,x,y):
     if not camera_id in cameras:
         print('<<<<< Input ID not existed >>>>>')
@@ -88,7 +89,7 @@ def cancel_alarm_location(camera_id,alarm,x,y):
 
 
 def cancel_alarm(camera_id):
-    print('<<<<< Cancel >>>>>')
+   
     if not camera_id in cameras:
         return
     while True:        
