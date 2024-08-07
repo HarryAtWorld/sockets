@@ -3,7 +3,8 @@ from threading import Thread
 import socketio_camera
 
 computer_id = 1  #change this id for Computer
-camera_list = [1,3,5,6,7,8,9,10,12,28,33,37,41,42,43,45,47] #change this list for cameras' id monitored by this computer
+# camera_list = [1,3,5,6,7,8,9,10,12,28,33,37,41,42,43,45,47] #change this list for cameras' id monitored by this computer
+camera_list = [5,6] 
 socket_server = "ws://localhost:12000" #change the server address
 
 Socketio = Thread(target = socketio_camera.connect_server,args=[computer_id,camera_list,socket_server])
@@ -42,16 +43,30 @@ while True:
     #         print('-')
     #     time.sleep(1)
 
-    socketio_camera.yellow_alarm(5)
-    time.sleep(1)
-    socketio_camera.camera_error(5)
-    time.sleep(1)
+    # socketio_camera.yellow_alarm(5)
+    # time.sleep(1)
+    # socketio_camera.camera_error(5)
+    # time.sleep(1)
+    # socketio_camera.camera_resumed(5)
+    # time.sleep(1)
+    socketio_camera.alarm_location(6,"red_alarm",20,30)
+    time.sleep(3)
+
+    socketio_camera.alarm_location(6,"red_alarm",20,30)
+    time.sleep(3)
+    socketio_camera.alarm_location(5,"red_alarm",77,88)
+    socketio_camera.alarm_location(5,"yellow_alarm",999,999)
+    time.sleep(3)
+    socketio_camera.cancel_alarm(6,"red_alarm",20,30)
+    time.sleep(3)
+    socketio_camera.camera_blocked(5)
+    time.sleep(3)
     socketio_camera.camera_resumed(5)
-    time.sleep(1)
+    time.sleep(3)
 
 
 
-    time.sleep(1)
+    # time.sleep(1)
 
     
 
