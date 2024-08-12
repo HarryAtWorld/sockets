@@ -1,5 +1,5 @@
 #pip install python-socketio
-#pip install eventlet
+#pip install aiohttp
 
 import socketio
 import asyncio
@@ -16,30 +16,17 @@ computer_list = {
 
 camera_list={
     1:{'id':1, 'state':'disconnected','type':'camera','alarms':[]},
+    2:{'id':2, 'state':'disconnected','type':'camera','alarms':[]},
     3:{'id':3, 'state':'disconnected','type':'camera','alarms':[]},
-    5:{'id':5, 'state':'disconnected','type':'camera','alarms':[]},
-    6:{'id':6, 'state':'disconnected','type':'camera','alarms':[]},
-    7:{'id':7, 'state':'disconnected','type':'camera','alarms':[]},
-    8:{'id':8, 'state':'disconnected','type':'camera','alarms':[]},
-    9:{'id':9, 'state':'disconnected','type':'camera','alarms':[]},
-    10:{'id':10, 'state':'disconnected','type':'camera','alarms':[]},
-    12:{'id':12, 'state':'disconnected','type':'camera','alarms':[]},
-    28:{'id':28, 'state':'disconnected','type':'camera','alarms':[]},
-    33:{'id':33, 'state':'disconnected','type':'camera','alarms':[]},
-    37:{'id':37, 'state':'disconnected','type':'camera','alarms':[]},
-    41:{'id':41, 'state':'disconnected','type':'camera','alarms':[]},
-    42:{'id':42, 'state':'disconnected','type':'camera','alarms':[]},
-    43:{'id':43, 'state':'disconnected','type':'camera','alarms':[]},
-    45:{'id':45, 'state':'disconnected','type':'camera','alarms':[]},
-    47:{'id':47, 'state':'disconnected','type':'camera','alarms':[]},
+    4:{'id':4, 'state':'disconnected','type':'camera','alarms':[]},
+
 }
 
 ipad_list={
     1:{'id':1, 'state':'disconnected','type':'ipad'},
     2:{'id':2, 'state':'disconnected','type':'ipad'},
     3:{'id':3, 'state':'disconnected','type':'ipad'},
-    4:{'id':4, 'state':'disconnected','type':'ipad'},
-    5:{'id':5, 'state':'disconnected','type':'ipad'},
+
 }
 
 watch_list={
@@ -228,6 +215,9 @@ async def cancel_alarm(sid, data):
 @sio.event
 async def cancel_alarm_location(sid, data):
     #data sample--> {camera_id:"1","alarm":[x,y,'red_alarm']}
+
+    if not data['alarm'] in camera_list[data['camera_id']]['alarms']:
+        return
     
     print_heading('Alarm Location Canceled')
     print('camera_id:',data['camera_id'],data['alarm'])
