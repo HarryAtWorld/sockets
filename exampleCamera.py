@@ -51,7 +51,7 @@ while True:
     # time.sleep(1)
 
 
-    socketio_camera.alarm_location(1,"yellow_alarm",2500,770)
+    socketio_camera.alarm_location(1,"yellow_alarm",1250,385)
     time.sleep(1)
     # socketio_camera.alarm_location(1,"yellow_alarm",2500,385)
     # time.sleep(3)
@@ -60,7 +60,7 @@ while True:
     # socketio_camera.alarm_location(3,"red_alarm",300,200)
     # time.sleep(3)
     # socketio_camera.cancel_alarm_location(3,"red_alarm",300,200)
-    socketio_camera.cancel_alarm_location(1,"yellow_alarm",100,770)
+    socketio_camera.cancel_alarm_location(1,"yellow_alarm",1250,385)
     time.sleep(1)
 
     # socketio_camera.cancel_alarm_location(1,"yellow_alarm",10,30)

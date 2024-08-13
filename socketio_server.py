@@ -8,6 +8,8 @@ from aiohttp import web
 import os
 import json
 
+log_path = "/home/hkuit/sockets/log/"
+
 computer_list = {
     1:{'id':1, 'state':'disconnected','type':'edge_computer'},
     2:{'id':2, 'state':'disconnected','type':'edge_computer'},
@@ -42,8 +44,8 @@ computer_connection_list = {}#{socket_id : computer_id} --> Data Example: same a
 
 
 #=============== log directory checking===================================
-if not os.path.exists("/home/hkuit/sockets/log/"):
-    os.makedirs("/home/hkuit/sockets/log/") 
+if not os.path.exists(log_path):
+    os.makedirs(log_path) 
 
 #=============== SocketIO Setting ===================================
 
@@ -346,7 +348,7 @@ def get_updated_list():
 def save_log(id,message):
 
     dt = datetime.now()
-    file_name = f"/home/hkuit/sockets/log/{dt.year}-{dt.month}-{dt.day}.txt"
+    file_name = f"{log_path}{dt.year}-{dt.month}-{dt.day}.txt"
 
     with open(file_name, "a") as log:
         log.write(f"{dt},{id},{message}\n")
