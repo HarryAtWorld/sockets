@@ -271,11 +271,17 @@ async def alarm_location(sid, data):
         return
 
     camera_list[data['camera_id']]['alarms'].append(data['alarm'])
-    
+
     await sio.emit('latest_data',get_updated_list())
+
+    if data['alarm'][2] == "yellow_alarm":
+        await sio.emit('yellow_alarm',{'camera_id':data['camera_id']})
+    elif data['alarm'][2] == "red_alarm":
+        await sio.emit('red_alarm',{'camera_id':data['camera_id']})
 
     print_heading('!!! Alarm !!!')
     print('camera_id:',data['camera_id'],' in ',data['alarm'])
+
 
     save_log(f" camera {data['camera_id']}",f"{data['alarm']}")
     print_latest_list()
