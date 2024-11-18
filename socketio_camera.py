@@ -100,6 +100,15 @@ def cancel_alarm(camera_id):
             print('re-trying, cancel alarm sending')
             sio.sleep(1)
 
+def cancel_all_alarm():  
+    while True:        
+        try:
+            sio.emit('cancel_all_alarm',{})
+            break
+        except:
+            print('re-trying, cancel all alarm sending')
+            sio.sleep(1)
+
 def camera_error(camera_id):
     if not camera_id in cameras:
         print('<<<<< Input ID not existed >>>>>')

@@ -230,6 +230,25 @@ async def cancel_alarm_location(sid, data):
     await sio.emit('latest_data',get_updated_list())
 
     print_latest_list()
+
+
+@sio.event
+async def cancel_all_alarm(sid, data):
+    #data sample--> {camera_id:"1","alarm":[x,y,'red_alarm']}
+
+    for cameraID in camera_list:
+        camera_list[cameraID]['alarms'] = []
+        camera_list[cameraID]['states'] = 'connected'   
+
+    
+    print_heading('All Alarm Canceled')
+    # print('camera_id:',data['camera_id'],data['alarm'])
+
+    save_log(f"all cameras" , f" been canceled alarms")
+    
+    await sio.emit('latest_data',get_updated_list())
+
+    print_latest_list()
             
     
 #=================== Camera's Alarm Events ====================
