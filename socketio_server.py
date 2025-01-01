@@ -4,6 +4,7 @@
 import socketio
 import asyncio
 from datetime import datetime
+
 from aiohttp import web
 import os
 import json
@@ -49,8 +50,16 @@ if not os.path.exists(log_path):
 
 #=============== SocketIO Setting ===================================
 
-sio = socketio.AsyncServer(async_mode='aiohttp')
+sio = socketio.AsyncServer(async_mode='aiohttp',cors_allowed_origins='*')
 app = web.Application()
+# app = web.Application(middlewares=[cors_middleware(allow_all=True)])
+# app = web.Application(
+#     middlewares=[
+#         cors_middleware(origins=["http://192.168.0.252"])
+#     ]
+# )
+
+
 sio.attach(app)
 
 #================ When Device Connection Started ================
@@ -109,10 +118,15 @@ async def register(sid, data):
     print_latest_list()
 
 
-
 @sio.event
 async def request_latest_data(sid,data):
     await sio.emit('latest_data',get_updated_list())
+
+# for event testing
+@sio.event
+async def hi(sid):
+    print("receive hi")
+    await sio.emit('bye')
 
 
 #================ When Device Disconnected =====================

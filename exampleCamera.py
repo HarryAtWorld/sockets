@@ -7,6 +7,7 @@ computer_id = 1  #change this id for Computer
 camera_list = [1,2,3,4] 
 socket_server = "ws://localhost:12000" #change the server address
 
+
 Socketio = Thread(target = socketio_camera.connect_server,args=[computer_id,camera_list,socket_server])
 
 Socketio.start()
