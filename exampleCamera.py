@@ -34,11 +34,15 @@ while True:
     if i>999:
         i=0
 
-    socketio_camera.alarm_location(2,"yellow_alarm",1250,385)
+    socketio_camera.alarm_location(2,"yellow_alarm",0,0)
+    time.sleep(2)
+    socketio_camera.alarm_location(2,"yellow_alarm",0,1500)
+    time.sleep(2)
+    socketio_camera.alarm_location(2,"yellow_alarm",2500,0)
     time.sleep(2)
 
-    socketio_camera.alarm_location(3,"red_alarm",300,200)
-    time.sleep(2)
+    # socketio_camera.alarm_location(3,"red_alarm",300,200)
+    # time.sleep(2)
 
 
     socketio_camera.cancel_all_alarm()

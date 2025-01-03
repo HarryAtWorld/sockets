@@ -49,7 +49,7 @@ if not os.path.exists(log_path):
 
 #=============== SocketIO Setting ===================================
 
-sio = socketio.AsyncServer(async_mode='aiohttp')
+sio = socketio.AsyncServer(async_mode='aiohttp',cors_allowed_origins='*')
 app = web.Application()
 sio.attach(app)
 
